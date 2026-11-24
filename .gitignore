@@ -1,0 +1,22 @@
+# CMake generated files
+.cmake-build/
+build/
+
+# Compiled binaries and objects
+*.exe
+*.dll
+*.obj
+*.o
+*.pdb
+*.ilk
+*.lib
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.tlog
+*.lastbuildstate
+
+# Local CMake settings
+CMakeUserPresets.json
