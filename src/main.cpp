@@ -4,6 +4,7 @@
 
 #include <tan.h>
 #include <user.h>
+#include <persistence.h>
 
 using namespace std;
 
@@ -12,6 +13,10 @@ std::unique_ptr<User> user;
 
 void InitializeGlobals() {
     user = std::make_unique<User>();
+}
+
+void SaveState() {
+
 }
 
 int main() {
@@ -24,5 +29,6 @@ int main() {
     }
 
     // Exit
+    SaveState();
     return interface_result.value_or(0); // Returns whatever the interface code did. Defaults to zero
 }
