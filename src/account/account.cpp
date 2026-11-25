@@ -1,5 +1,16 @@
 #include <account.h>
 
+// Can only be called once
+void Account::SetId(int new_id) {
+    if (id == -1) {
+        id = new_id;
+    }
+}
+
+int Account::GetId() const {
+    return id;
+}
+
 bool Account::SetPhoneNumber(std::string new_number){
     if (new_number.size() != PHONE_NUMBER_LENGTH) {
         return false;

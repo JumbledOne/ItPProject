@@ -15,7 +15,7 @@ int main() {
     // Display Screen
     std::optional<int> interface_result = std::nullopt;
     while (!(interface_result)) { // Waits until the interface result returns something
-       interface_result = Interface::DisplayScreen(*session);
+       interface_result = Interface::ShowInterface(*session);
     }
 
     // Exit
