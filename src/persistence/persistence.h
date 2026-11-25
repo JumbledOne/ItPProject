@@ -7,6 +7,13 @@
 #include <database.h>
 
 namespace Persistence {
-    void Save(Database& database);
-    void Load(Database& database);
+    // Saves the database to disk
+    inline void Save(Database& database) {
+
+    }
+
+    // Loads data onto the database class directly
+    inline void Load(Database& database) {
+
+    }
 }
