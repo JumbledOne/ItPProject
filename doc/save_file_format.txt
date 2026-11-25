@@ -1,0 +1,21 @@
+Text after new lines creates the object instance and define what the thing being saved is. Then the text after tabs determine what variables to load in. And the a space after that is the value to be loaded.
+
+DATABASE						# Must only be done once
+	LastAccountID -1			
+	LastTransactionID -1		
+
+ACCOUNT
+	AccountNumber 00000000		# Turned into a string
+	Name John_Smith				# Spaces are turned into underscores and back
+	Money 0						# A float but only two digits are saved
+	
+ACCOUNT
+	AccountNumber 00000001		# Turned into a string
+	Name John_Smith				# Spaces are turned into underscores and back
+	Money 0						# A float but only two digits are saved
+	
+TRANSACTION
+	ReferenceNumber 00000000
+	From 00000000				# Account number so that the transaction can be loaded before the account
+	To 00000000
+	Amount 0
