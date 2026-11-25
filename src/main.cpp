@@ -1,20 +1,28 @@
 #include <iostream>
 #include <memory>
+#include <optional>
 
+#include <tan.h>
 #include <user.h>
 
+using namespace std;
+
+// Global vars
 std::unique_ptr<User> user;
 
-int main() {
-    // Initialize user state here
+void InitializeGlobals() {
     user = std::make_unique<User>();
+}
 
-    // Display Screen?
-    // TODO
+int main() {
+    InitializeGlobals();
 
-    std::cout << "Input something: " << std::endl;
-    int test;
-    std::cin >> test;
+    // Display Screen
+    std::optional<int> interface_result = std::nullopt;
+    while (!(interface_result)) { // Waits until the interface result returns something
+       interface_result = DisplayMainScreen(); 
+    }
+
     // Exit
-    return 0;
+    return interface_result.value_or(0); // Returns whatever the interface code did. Defaults to zero
 }

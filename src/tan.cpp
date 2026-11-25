@@ -1,19 +1,11 @@
-#include <iostream>
-#include <stdlib.h>
-#include <iomanip>
-#include <conio.h>
-using namespace std;
-
-void Login();
-void Register();
-void CashIn();
-void CashOut();
+#include <tan.h>
 
 int opt, walletOpt, PIN, attempt, activeAccount;
 long long accountNum, accNum, pw;
 double cash, RegisteredWallet, PresetWallet=5000;
-int main(){
-	do{
+
+optional<int> DisplayMainScreen(){
+	do {
 	system("cls");
 	cout << "Welcome to ePESO!\n\n";
 	cout << "[1] Log In\n";
@@ -38,7 +30,7 @@ int main(){
 			break;
 	}
 	
-	}while(opt!= 3);
+	} while(opt!= 3);
 	return 0;
 }
 void Register(){
