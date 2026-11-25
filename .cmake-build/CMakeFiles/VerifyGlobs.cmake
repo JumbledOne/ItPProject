@@ -54,7 +54,7 @@ endif()
 # APP_SOURCES at CMakeLists.txt:5 (file)
 file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "E:/WorkFolder/School/ItPProject/src/*.cpp")
 set(OLD_GLOB
-  "E:/WorkFolder/School/ItPProject/src/test.cpp"
+  "E:/WorkFolder/School/ItPProject/src/main.cpp"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   message("-- GLOB mismatch!")

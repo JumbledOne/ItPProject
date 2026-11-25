@@ -1,8 +1,12 @@
 #pragma once
 #include <string>
 
-class InterfaceObject {
+class UiObject {
 public:
+    UiObject(int pos_x = 0, int pos_y = 0, int width = 10)
+        : pos_x(pos_x), pos_y(pos_y), width(width) {}
+
+    // Positioning
     int pos_x;
     int pos_y;
     int width = 10;

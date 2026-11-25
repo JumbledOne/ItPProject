@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
-#include <interface_object.h>
+#include <ui_object.h>
 
-class InteractableObject : InterfaceObject {
+class InteractableObject : public UiObject {
 public:
     virtual std::string Display();
     virtual bool ReceiveInput(char key); // Returns true if the input was used. Forwarded from Menu
