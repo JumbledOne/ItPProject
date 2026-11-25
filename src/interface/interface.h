@@ -1,3 +1,8 @@
+#pragma once
+
+#include <optional>
+
+#include <tan.h>
 
 // # Screens
 // Login
@@ -5,5 +10,5 @@
 // ?
 
 namespace Interface {
-
+    std::optional<int> DisplayScreen();
 }
