@@ -8,12 +8,12 @@
 
 namespace Persistence {
     // Saves the database to disk
-    inline void Save(Database& database) {
+    inline void Save(Session& session) {
 
     }
 
     // Loads data onto the database class directly
-    inline void Load(Database& database) {
+    inline void Load(Session& session) {
 
     }
 }
