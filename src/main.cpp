@@ -2,10 +2,10 @@
 #include <memory>
 #include <optional>
 
-#include <tan.h>
 #include <user.h>
 #include <persistence.h>
 #include <database.h>
+#include <interface.h>
 
 using namespace std;
 
@@ -26,7 +26,7 @@ int main() {
     // Display Screen
     std::optional<int> interface_result = std::nullopt;
     while (!(interface_result)) { // Waits until the interface result returns something
-       interface_result = DisplayMainScreen(); 
+       interface_result = Interface::DisplayScreen(); 
     }
 
     // Exit
