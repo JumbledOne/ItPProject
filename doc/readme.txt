@@ -11,6 +11,7 @@
 * The program saves and exits if the input ends (Ctrl+Z)
 * A save without any accounts counts as no save, so the default account is made
 * Money is stored as a float, save loading is known to cause the cent values to drift due to precision errors.
+* Deleted accounts don't delete transactions. They would still exist with nothing referencing them
 
 # Notes
 * Account names can be anything except empty

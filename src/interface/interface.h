@@ -26,7 +26,8 @@ namespace Interface {
         {SCREENS::SEND_MONEY, Gabua::SendMoney},
         {SCREENS::VIEW_TRANSACTIONS, Blones::ViewTransactions},
         {SCREENS::CHANGE_NAME, Blones::ChangeName},
-        {SCREENS::CHANGE_PIN, Blones::ChangePin}
+        {SCREENS::CHANGE_PIN, Blones::ChangePin},
+        {SCREENS::DELETE_ACCOUNT, Blones::AccountDeletion}
     };
 
     // The main function that runs the interface on a loop

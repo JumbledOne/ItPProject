@@ -204,7 +204,8 @@ namespace Tan {
         cout << "\n[7] View Transactions";
         cout << "\n[8] Change Name";
         cout << "\n[9] Change PIN";
-        cout << "\n[10] Log Out";
+        cout << "\n[10] Delete Account";
+        cout << "\n[11] Log Out";
         cout << "\n" << InterfaceUtils::OPTION_PROMPT;
 
         // Input
@@ -225,7 +226,8 @@ namespace Tan {
             case 7: session.RequestScreen(SCREENS::VIEW_TRANSACTIONS); break;
             case 8: session.RequestScreen(SCREENS::CHANGE_NAME); break;
             case 9: session.RequestScreen(SCREENS::CHANGE_PIN); break;
-            case 10:
+            case 10: session.RequestScreen(SCREENS::DELETE_ACCOUNT); break;
+            case 11:
                 session.LogOut();
                 session.RequestScreen(SCREENS::MAIN);
                 break;

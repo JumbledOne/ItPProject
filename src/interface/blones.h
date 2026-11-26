@@ -112,6 +112,26 @@ namespace Blones {
 
     constexpr int PIN_ATTEMPTS = 3;
 
+    // Asks for the PIN of the account. Returns true if it was entered correctly (within PIN_ATTEMPTS tries)
+    // Returns false if the line was left empty or the tries ran out (that is shown first), so the caller just goes back
+    inline bool AskForPin(const Account& account, const string& prompt) {
+        for (int attempt = 0; attempt < PIN_ATTEMPTS; attempt++) {
+            cout << prompt;
+            string input;
+            InterfaceUtils::ReadLineTrimmed(input);
+            if (input.empty()) {
+                return false;
+            }
+            if (Account::IsValidPin(input) && input == account.GetPin()) {
+                return true;
+            }
+            cout << "Incorrect PIN.\n";
+        }
+        cout << "Too many incorrect attempts. Press any key to continue...";
+        InterfaceUtils::AwaitInput();
+        return false;
+    }
+
     // Leaving the line empty returns to the wallet without changing anything
     inline void ChangeName(Session& session) {
         session.RequestScreen(SCREENS::WALLET); // Always goes back to the wallet when it's done
@@ -147,24 +167,10 @@ namespace Blones {
         cout << "Leave a line empty to go back without changing your PIN.\n\n";
 
         // Check the current PIN first
-        string input;
-        bool is_verified = false;
-        for (int attempt = 0; attempt < PIN_ATTEMPTS && !is_verified; attempt++) {
-            cout << "Enter your current PIN: ";
-            InterfaceUtils::ReadLineTrimmed(input);
-            if (input.empty()) {
-                return;
-            }
-            is_verified = Account::IsValidPin(input) && input == account->GetPin();
-            if (!is_verified) {
-                cout << "Incorrect PIN.\n";
-            }
-        }
-        if (!is_verified) {
-            cout << "Too many incorrect attempts. Press any key to continue...";
-            InterfaceUtils::AwaitInput();
+        if (!AskForPin(*account, "Enter your current PIN: ")) {
             return;
         }
+        string input;
 
         // Now the new one. If the confirmation doesn't match it starts over from the new PIN
         while (true) {
@@ -197,5 +203,48 @@ namespace Blones {
             }
             cout << "The PINs do not match. Try again.\n";
         }
+    }
+
+    // Deletes the account that is logged in together with its transaction history
+    // The PIN has to be entered and then entered again as the confirmation. Leaving a line empty returns to the wallet
+    inline void AccountDeletion(Session& session) {
+        session.RequestScreen(SCREENS::WALLET); // Goes back to the wallet unless the account gets deleted
+        Account* account = session.GetActiveAccount();
+        if (!account) {
+            return;
+        }
+
+        InterfaceUtils::ClearScreen();
+        cout << "Deleting Account...\n";
+        cout << "This permanently deletes the account of " << account->name << " and its transaction history.\n";
+        if (account->GetMoney() > 0) {
+            cout << "The balance of " << InterfaceUtils::FloatToPeso(account->GetMoney()) << " will be lost.\n";
+        }
+        cout << "Leave a line empty to go back without deleting.\n\n";
+
+        if (!AskForPin(*account, "Enter your " + to_string(PIN_LENGTH) + "-DIGIT PIN: ")) {
+            return;
+        }
+
+        string confirmation;
+        cout << "Confirm your PIN: ";
+        InterfaceUtils::ReadLineTrimmed(confirmation);
+        if (confirmation.empty()) {
+            return;
+        }
+        if (confirmation != account->GetPin()) {
+            cout << "The PIN does not match so the account was not deleted. Press any key to continue...";
+            InterfaceUtils::AwaitInput();
+            return;
+        }
+
+        // Delete here
+        int id = account->GetId();
+        string name = account->name;
+        session.LogOut(); // The active account is stored in the database so it has to be let go before it's deleted
+        session.database->DeleteAccount(id);
+        session.RequestScreen(SCREENS::MAIN);
+        cout << "The account of " << name << " has been deleted. Press any key to continue...";
+        InterfaceUtils::AwaitInput();
     }
 }

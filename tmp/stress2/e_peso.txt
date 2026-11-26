@@ -1,0 +1,51 @@
+DATABASE
+	LastAccountID 0
+	LastTransactionID 6
+ACCOUNT
+	AccountNumber 0
+	Name Tester
+	PhoneNumber 09171234567
+	PIN 1234
+	Money 100.00
+TRANSACTION
+	ReferenceNumber 0
+	Type CASH_IN
+	From -1
+	To 0
+	Amount 1.00
+TRANSACTION
+	ReferenceNumber 1
+	Type CASH_IN
+	From -1
+	To 0
+	Amount 1.00
+TRANSACTION
+	ReferenceNumber 2
+	Type CASH_IN
+	From -1
+	To 0
+	Amount 1.00
+TRANSACTION
+	ReferenceNumber 3
+	Type CASH_IN
+	From -1
+	To 0
+	Amount 1.00
+TRANSACTION
+	ReferenceNumber 4
+	Type CASH_IN
+	From -1
+	To 0
+	Amount 1.00
+TRANSACTION
+	ReferenceNumber 5
+	Type CASH_IN
+	From -1
+	To 0
+	Amount 1.00
+TRANSACTION
+	ReferenceNumber 6
+	Type CASH_IN
+	From -1
+	To 0
+	Amount 1.00
