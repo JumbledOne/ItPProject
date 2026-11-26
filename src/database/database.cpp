@@ -17,6 +17,7 @@ Transaction& Database::CreateTransaction(int from, int to, float amount) {
     return transaction;
 }
 
+// NOTE: Session::active_account points into this map. Set it to nullptr first if this is the active account
 void Database::DeleteAccount(int id) {
     accounts.erase(id);
 }

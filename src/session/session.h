@@ -12,10 +12,11 @@ public:
     Session();
 
     std::unique_ptr<Database> database;
-    int account = 0; // Uses the account id so that it doesn't need to know about the account class
+    Account* active_account = nullptr; // Not owned; points into database->accounts. Null means nobody is logged in
     SCREENS screen = SCREENS::MAIN;
     std::optional<int> exit_code = std::nullopt;
 
     void RequestScreen(SCREENS new_screen); // Only a request you still have to return manually
     void RequestExit(int new_exit_code); // Only a request you still have to return manually
+
 };
