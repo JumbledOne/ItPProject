@@ -33,18 +33,7 @@ bool TransferMoney(Database& database,
         return false;
     }
 
-    // Add the money to the recipient first.
-    if (!recipient.AddMoney(amount)) {
-        return false;
-    }
-
-    // Deduct the amount from the sender.
-    if (!sender.DeductMoney(amount)) {
-        recipient.DeductMoney(amount);
-        return false;
-    }
-
-    // Record the successful transaction.
+    // Creating the transaction is what moves the money: it's deducted from the sender and added to the recipient.
     database.CreateTransaction(&sender, &recipient, amount, TRANSACTION_TYPE::TRANSFER);
 
     return true;

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <conio.h>
 #include <iostream>
 #include <string>
 
@@ -14,7 +13,7 @@ namespace Tan {
 
     inline void Pause() {
         cout << "\nPress any key to continue...";
-        _getch();
+        InterfaceUtils::AwaitInput();
     }
 
     // Mobile numbers are PHONE_NUMBER_LENGTH digits and start with 09
@@ -52,7 +51,7 @@ namespace Tan {
                 break;
             default:
                 cout << "Invalid option. Press any key to continue...";
-                _getch();
+                InterfaceUtils::AwaitInput();
                 break;
         }
     }
@@ -75,12 +74,12 @@ namespace Tan {
             cin >> phone;
             if (!IsValidPhoneNumber(phone)) {
                 cout << "Invalid mobile number. Press any key to try again.\n";
-                _getch();
+                InterfaceUtils::AwaitInput();
                 continue;
             }
             if (FindPhone(session, phone) != -1) {
                 cout << "That mobile number is already registered. Press any key to try again.\n";
-                _getch();
+                InterfaceUtils::AwaitInput();
                 continue;
             }
             break;
@@ -93,7 +92,7 @@ namespace Tan {
             if (!Account::IsValidPin(PIN)) {
                 InterfaceUtils::ClearInput(); // Throw away bad input
                 cout << "Invalid PIN. Press any key to try again.\n";
-                _getch();
+                InterfaceUtils::AwaitInput();
                 continue;
             }
             break;
@@ -106,7 +105,7 @@ namespace Tan {
             if (cin.fail() || confirm_PIN != PIN) {
                 InterfaceUtils::ClearInput();
                 cout << "PIN does not match. Press any key to try again.\n";
-                _getch();
+                InterfaceUtils::AwaitInput();
                 continue;
             }
             break;
@@ -121,7 +120,7 @@ namespace Tan {
         session.LogIn(account);
         cout << "Account created! Your account number is " << InterfaceUtils::FormatReferenceNumber(account.GetId())
              << ". Press any key to continue...";
-        _getch();
+        InterfaceUtils::AwaitInput();
         session.RequestScreen(SCREENS::WALLET);
     }
 
@@ -132,7 +131,7 @@ namespace Tan {
         const auto& account_list = session.database->GetAccounts();
         if (account_list.empty()) {
             cout << "No accounts registered. Press any key to continue...";
-            _getch();
+            InterfaceUtils::AwaitInput();
             session.RequestScreen(SCREENS::MAIN);
             return;
         }
@@ -161,7 +160,7 @@ namespace Tan {
                 InterfaceUtils::ClearInput(); // Drop anything extra on the line
                 if (Account::IsValidPin(pin_input) && pin_input == account.GetPin()) {
                     cout << "Access Granted. Enter any key to continue...";
-                    _getch();
+                    InterfaceUtils::AwaitInput();
                     session.LogIn(account);
                     session.RequestScreen(SCREENS::WALLET);
                     return;
@@ -170,10 +169,10 @@ namespace Tan {
                 --attempt;
             } while (attempt > 0);
             cout << "Access Denied. Press any key to continue...";
-            _getch();
+            InterfaceUtils::AwaitInput();
         } else {
             cout << "Account number not registered. Press any key to continue...";
-            _getch();
+            InterfaceUtils::AwaitInput();
         }
         session.RequestScreen(SCREENS::MAIN);
     }
@@ -231,7 +230,7 @@ namespace Tan {
                 break;
             default:
                 cout << "Invalid option. Press any key to try again.";
-                _getch();
+                InterfaceUtils::AwaitInput();
                 break;
         }
     }
@@ -255,7 +254,8 @@ namespace Tan {
         char confirm;
         cout << "Confirm? (Y/N): ";
         cin >> confirm;
-        if ((confirm == 'Y' || confirm == 'y') && account->AddMoney(amount)) {
+        if (confirm == 'Y' || confirm == 'y') {
+            // Creating the transaction is what adds the money
             session.database->CreateTransaction(nullptr, account, amount, TRANSACTION_TYPE::CASH_IN);
             cout << "Cash in successful. New balance: " << InterfaceUtils::FloatToPeso(account->GetMoney()) << "\n";
         } else {
@@ -283,7 +283,8 @@ namespace Tan {
         char confirm;
         cout << "Confirm? (Y/N): ";
         cin >> confirm;
-        if ((confirm == 'Y' || confirm == 'y') && account->DeductMoney(amount)) {
+        if (confirm == 'Y' || confirm == 'y') {
+            // Creating the transaction is what takes the money out. The balance was already checked above
             session.database->CreateTransaction(account, nullptr, amount, TRANSACTION_TYPE::CASH_OUT);
             cout << "Cash out successful. New balance: " << InterfaceUtils::FloatToPeso(account->GetMoney()) << "\n";
         } else {

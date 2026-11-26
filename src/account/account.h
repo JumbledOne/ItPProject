@@ -23,10 +23,8 @@ public:
     int GetId() const;
 
     float GetMoney() const;
-    void SetMoney(float new_money);
-    bool HasSufficientBalance(float amount) const;
-    bool AddMoney(float amount);
-    bool DeductMoney(float amount);
+    void SetMoney(float new_money); // Only for the initial value. After that the money only changes through LinkTransaction and UnlinkTransaction
+    bool HasSufficientBalance(float amount) const; // Read only check. Does nothing to the money
 
     bool SetPhoneNumber(std::string new_number); // Return value is whether this succeeded
     std::string GetPhoneNumber() const;
@@ -38,7 +36,9 @@ public:
 
     // Transactions are tracked here so you can easily iterate over them
     // Called from database which owns account and transaction
+    // Linking also moves the money: it's added if this account is the receiver and deducted if it's the sender
+    // Unlinking undoes that
     const std::vector<Transaction*>& GetTransactions() const;
-    void AddTransaction(Transaction& transaction);
-    void DeleteTransaction(int reference_number);
+    void LinkTransaction(Transaction& transaction);
+    void UnlinkTransaction(int reference_number);
 };

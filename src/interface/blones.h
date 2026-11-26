@@ -57,6 +57,12 @@ namespace Blones {
                     case TRANSACTION_TYPE::CASH_OUT:
                         cout << "Cash Out";
                         break;
+                    case TRANSACTION_TYPE::BILL_PAYMENT:
+                        cout << "Bill Payment";
+                        break;
+                    case TRANSACTION_TYPE::LOAD_PURCHASE:
+                        cout << "Load Purchase";
+                        break;
                 }
                 cout << "\nReference Number: " << InterfaceUtils::FormatReferenceNumber(transaction->reference_number);
                 cout << "\nAmount: " << InterfaceUtils::FloatToPeso(transaction->amount);
@@ -72,7 +78,10 @@ namespace Blones {
             // Listen for input
             cout << "\n" << InterfaceUtils::OPTION_PROMPT;
             int input;
-            cin >> input;
+            if (!(cin >> input)) {
+                InterfaceUtils::ClearInput(); // Otherwise a letter would fail forever
+                continue;
+            }
             switch (input) {
                 case 1:
                     if (page > 0) {

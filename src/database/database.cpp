@@ -18,12 +18,12 @@ Transaction& Database::CreateTransaction(Account* from, Account* to, float amoun
     transaction.to = to;
     transaction.amount = amount;
     transaction.type = type;
-    // Link transaction to accounts
+    // Link transaction to accounts. This is also what moves the money
     if (from) {
-        from->AddTransaction(transaction);
+        from->LinkTransaction(transaction);
     }
     if (to && to != from) { // Don't link it twice if it's the same account
-        to->AddTransaction(transaction);
+        to->LinkTransaction(transaction);
     }
 
     return transaction;
@@ -48,11 +48,12 @@ void Database::DeleteTransaction(int id) {
         return;
     }
     const Transaction& transaction = transactions.at(id);
+    // Unlinking also gives the money back
     if (transaction.from) {
-        transaction.from->DeleteTransaction(id);
+        transaction.from->UnlinkTransaction(id);
     }
     if (transaction.to) {
-        transaction.to->DeleteTransaction(id);
+        transaction.to->UnlinkTransaction(id);
     }
     transactions.erase(id);
 }

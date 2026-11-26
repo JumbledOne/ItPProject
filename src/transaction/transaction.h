@@ -3,7 +3,9 @@
 enum class TRANSACTION_TYPE {
     TRANSFER,
     CASH_IN,
-    CASH_OUT
+    CASH_OUT,
+    BILL_PAYMENT,
+    LOAD_PURCHASE
 };
 
 class Account; // Forward declared since account.h includes this file

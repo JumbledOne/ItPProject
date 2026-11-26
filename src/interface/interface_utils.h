@@ -1,12 +1,19 @@
 #pragma once
 
 #include <cmath>
+#include <cstdio>
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
 #include <limits>
 #include <sstream>
 #include <string>
+
+// _getch is only on some compilers/platforms
+#if __has_include(<conio.h>)
+#include <conio.h>
+#define INTERFACE_UTILS_HAS_CONIO
+#endif
 
 namespace InterfaceUtils {
 
@@ -39,6 +46,19 @@ namespace InterfaceUtils {
     inline void ClearInput() {
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+
+    // Waits for the user to press a key
+    // Uses _getch since it doesn't need Enter. If that isn't available or fails, it waits for Enter on cin instead
+    inline void AwaitInput() {
+#ifdef INTERFACE_UTILS_HAS_CONIO
+        if (_getch() != EOF) {
+            return;
+        }
+#endif
+        cin.clear();
+        cin.ignore(1000, '\n'); // Whatever is left from a previous cin >>
+        cin.get();
     }
 
     // Reads a currency amount. Returns false (and clears the input) if it isn't a number or isn't above zero

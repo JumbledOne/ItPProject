@@ -55,31 +55,36 @@ const std::vector<Transaction*>& Account::GetTransactions() const {
     return transactions;
 }
 
-void Account::AddTransaction(Transaction& transaction) {
+// The only way the money changes after the initial value is by linking or unlinking a transaction
+// This doesn't check anything. Check HasSufficientBalance before creating a transaction that takes money out
+void Account::LinkTransaction(Transaction& transaction) {
     transactions.push_back(&transaction);
+    if (transaction.to == this) {
+        money += transaction.amount;
+    }
+    if (transaction.from == this) {
+        money -= transaction.amount;
+    }
 }
 
-void Account::DeleteTransaction(int reference_number) {
-    int i = 0;
-    for (Transaction* transaction : transactions) {
+// Does nothing if this account doesn't have that transaction
+void Account::UnlinkTransaction(int reference_number) {
+    for (size_t i = 0; i < transactions.size(); i++) {
+        const Transaction* transaction = transactions[i];
         if (transaction->reference_number == reference_number) {
+            // Undo what linking did
+            if (transaction->to == this) {
+                money -= transaction->amount;
+            }
+            if (transaction->from == this) {
+                money += transaction->amount;
+            }
             transactions.erase(transactions.begin() + i);
             break;
         }
-        i++;
     }
 }
+
 bool Account::HasSufficientBalance(float amount) const {
     return std::isfinite(amount) && amount > 0 && std::isfinite(money) && money >= amount;
-}
-bool Account::AddMoney(float amount) {
-    if (!std::isfinite(amount) || amount <= 0 || !std::isfinite(money) ||
-        amount > std::numeric_limits<float>::max() - money) return false;
-    money += amount;
-    return true;
-}
-bool Account::DeductMoney(float amount) {
-    if (!HasSufficientBalance(amount)) return false;
-    money -= amount;
-    return true;
 }

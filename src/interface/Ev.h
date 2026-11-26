@@ -1,19 +1,19 @@
 #pragma once
 
 #include <iostream>
-#include <stdlib.h>
-#include <iomanip>
 #include <string>
+
 #include <session.h>
-#include <tan.h>
+#include <interface_utils.h>
+#include <tan.h> // For Tan::IsValidPhoneNumber
 
 namespace Ev {
     using namespace std;
 
-    // ill js add a function for "_getch()" cus it wont run on my device
-    inline void _getch() {
-        cin.ignore(1000, '\n');
-        cin.get();
+    // Shows the message then waits so it can be read before the wallet screen clears it
+    inline void Fail(const string& message) {
+        cout << message << " Press any key to continue...";
+        InterfaceUtils::AwaitInput();
     }
 
     //MY PART (PAY BILLS & BUY LOAD)
@@ -25,15 +25,16 @@ namespace Ev {
         }
         int billerChoice;
         string biller, billingNumber;
-        double amount;
+        float amount;
         char confirm;
 
+        InterfaceUtils::ClearScreen();
         cout << "Welcome to ePESO!\n[BILLS PAYMENT]\n\n";
+        cout << "Wallet Amount: " << InterfaceUtils::FloatToPeso(account->GetMoney()) << "\n\n";
         cout << "[1] Electricity\n[2] Water\n[3] Internet\nChoose a biller: ";
-        cin >> billerChoice;
-        if (cin.fail()) {
-            cin.clear(); cin.ignore(1000, '\n');
-            cout << "Invalid choice. Press any key to continue..."; _getch();
+        if (!(cin >> billerChoice)) {
+            InterfaceUtils::ClearInput();
+            Fail("Invalid choice.");
             return;
         }
         switch (billerChoice) {
@@ -41,36 +42,37 @@ namespace Ev {
             case 2: biller = "Water"; break;
             case 3: biller = "Internet"; break;
             default:
-                cout << "Invalid choice. Press any key to continue..."; _getch();
+                Fail("Invalid choice.");
                 return;
         }
-        cout << "Enter fictional billing number: "; cin >> billingNumber;
-        cout << "Enter payment amount: PHP "; cin >> amount;
-        if (cin.fail() || amount <= 0) {
-            cin.clear(); cin.ignore(1000, '\n');
-            cout << "Invalid amount. Press any key to continue..."; _getch();
+        cout << "Enter billing number: ";
+        cin >> billingNumber;
+        cout << "Enter payment amount: ";
+        if (!InterfaceUtils::ReadAmount(amount)) {
+            Fail("Invalid amount.");
             return;
         }
-        if (!account->HasSufficientBalance((float)amount)) {
-            cout << "Insufficient balance. Press any key to continue..."; _getch();
+        if (!account->HasSufficientBalance(amount)) {
+            Fail("Insufficient balance.");
             return;
         }
-        cout << "Pay PHP " << fixed << setprecision(2) << amount << " to "
-            << biller << "? (Y/N): ";
+        cout << "Pay " << InterfaceUtils::FloatToPeso(amount) << " to " << biller << "? (Y/N): ";
         cin >> confirm;
         if (confirm != 'Y' && confirm != 'y') {
-            cout << "Payment cancelled. Press any key to continue..."; _getch();
+            Fail("Payment cancelled.");
             return;
         }
 
-        account->DeductMoney((float)amount);
+        // Creating the transaction is what takes the money out
+        const Transaction& transaction = session.database->CreateTransaction(account, nullptr, amount, TRANSACTION_TYPE::BILL_PAYMENT);
         cout << "\n=== PAYMENT RECEIPT ===\n"
+            << "Reference number: " << InterfaceUtils::FormatReferenceNumber(transaction.reference_number) << '\n'
             << "Biller: " << biller << '\n'
             << "Billing number: " << billingNumber << '\n'
-            << "Amount paid: PHP " << amount << '\n'
-            << "Remaining balance: PHP " << account->GetMoney() << '\n';
-        //input Transaction history dito
-        cout << "Press any key to continue..."; _getch();
+            << "Amount paid: " << InterfaceUtils::FloatToPeso(amount) << '\n'
+            << "Remaining balance: " << InterfaceUtils::FloatToPeso(account->GetMoney()) << '\n';
+        cout << "Press any key to continue...";
+        InterfaceUtils::AwaitInput();
     }
 
     inline void BuyLoad(Session& session) {
@@ -79,16 +81,18 @@ namespace Ev {
         if (!account) {
             return;
         }
-        int networkChoice, loadChoice, loadAmount;
+        int networkChoice, loadChoice;
+        float loadAmount;
         string network, mobileNumber;
         char confirm;
 
+        InterfaceUtils::ClearScreen();
         cout << "Welcome to ePESO!\n[BUY MOBILE LOAD]\n\n";
+        cout << "Wallet Amount: " << InterfaceUtils::FloatToPeso(account->GetMoney()) << "\n\n";
         cout << "[1] Globe\n[2] Smart\n[3] DITO\nChoose a network: ";
-        cin >> networkChoice;
-        if (cin.fail()) {
-            cin.clear(); cin.ignore(1000, '\n');
-            cout << "Invalid choice. Press any key to continue..."; _getch();
+        if (!(cin >> networkChoice)) {
+            InterfaceUtils::ClearInput();
+            Fail("Invalid choice.");
             return;
         }
         switch (networkChoice) {
@@ -96,25 +100,19 @@ namespace Ev {
             case 2: network = "Smart"; break;
             case 3: network = "DITO"; break;
             default:
-                cout << "Invalid choice. Press any key to continue..."; _getch();
+                Fail("Invalid choice.");
                 return;
         }
-        cout << "Enter recipient mobile number: "; cin >> mobileNumber;
-        if (mobileNumber.size() != 11 || mobileNumber[0] != '0' || mobileNumber[1] != '9') {
-            cout << "Enter an 11-digit number starting with 09. Press any key...";
-            _getch(); return;
-        }
-        for (char digit : mobileNumber) {
-            if (digit < '0' || digit > '9') {
-                cout << "Invalid mobile number. Press any key to continue...";
-                _getch(); return;
-            }
+        cout << "Enter recipient mobile number: ";
+        cin >> mobileNumber;
+        if (!Tan::IsValidPhoneNumber(mobileNumber)) {
+            Fail("Enter an 11-digit mobile number starting with 09.");
+            return;
         }
         cout << "[1] PHP 50\n[2] PHP 100\n[3] PHP 200\nChoose load amount: ";
-        cin >> loadChoice;
-        if (cin.fail()) {
-            cin.clear(); cin.ignore(1000, '\n');
-            cout << "Invalid choice. Press any key to continue..."; _getch();
+        if (!(cin >> loadChoice)) {
+            InterfaceUtils::ClearInput();
+            Fail("Invalid choice.");
             return;
         }
         switch (loadChoice) {
@@ -122,28 +120,30 @@ namespace Ev {
             case 2: loadAmount = 100; break;
             case 3: loadAmount = 200; break;
             default:
-                cout << "Invalid choice. Press any key to continue..."; _getch();
+                Fail("Invalid choice.");
                 return;
         }
-        if (!account->HasSufficientBalance((float)loadAmount)) {
-            cout << "Insufficient balance. Press any key to continue..."; _getch();
+        if (!account->HasSufficientBalance(loadAmount)) {
+            Fail("Insufficient balance.");
             return;
         }
-        cout << "Buy PHP " << loadAmount << ' ' << network << " load for "
+        cout << "Buy " << InterfaceUtils::FloatToPeso(loadAmount) << ' ' << network << " load for "
             << mobileNumber << "? (Y/N): ";
         cin >> confirm;
         if (confirm != 'Y' && confirm != 'y') {
-            cout << "Purchase cancelled. Press any key to continue..."; _getch();
+            Fail("Purchase cancelled.");
             return;
         }
 
-        account->DeductMoney((float)loadAmount);
+        // Creating the transaction is what takes the money out
+        const Transaction& transaction = session.database->CreateTransaction(account, nullptr, loadAmount, TRANSACTION_TYPE::LOAD_PURCHASE);
         cout << "\n=== LOAD RECEIPT ===\n"
+            << "Reference number: " << InterfaceUtils::FormatReferenceNumber(transaction.reference_number) << '\n'
             << "Network: " << network << '\n'
             << "Mobile number: " << mobileNumber << '\n'
-            << "Load purchased: PHP " << fixed << setprecision(2) << loadAmount << '\n'
-            << "Remaining balance: PHP " << account->GetMoney() << '\n';
-        //Transaction history ulet dito
-        cout << "Press any key to continue..."; _getch();
+            << "Load purchased: " << InterfaceUtils::FloatToPeso(loadAmount) << '\n'
+            << "Remaining balance: " << InterfaceUtils::FloatToPeso(account->GetMoney()) << '\n';
+        cout << "Press any key to continue...";
+        InterfaceUtils::AwaitInput();
     }
 } // namespace Ev
