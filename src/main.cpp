@@ -3,8 +3,8 @@
 #include <database.h>
 #include <interface.h>
 
-void CreateDefaultValues() {
-
+void CreateDefaultValues(Session& session) {
+    //session.database->CreateAccount();
 }
 
 int main() {
