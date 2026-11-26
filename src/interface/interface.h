@@ -7,6 +7,7 @@
 #include <screens.h>
 #include <session.h>
 #include <tan.h>
+#include <Ev.h>
 
 namespace Interface {
     inline const std::unordered_map<SCREENS, std::function<void(Session&)>> SCREEN_TO_FUNCTION = {
@@ -14,7 +15,10 @@ namespace Interface {
         {SCREENS::REGISTRATION, Tan::Register},
         {SCREENS::LOGIN, Tan::Login},
         {SCREENS::CASH_IN, Tan::CashIn},
-        {SCREENS::CASH_OUT, Tan::CashOut}
+        {SCREENS::CASH_OUT, Tan::CashOut},
+        {SCREENS::WALLET, Tan::Wallet},
+        {SCREENS::PAY_BILLS, Ev::PayBills},
+        {SCREENS::BUY_LOAD, Ev::BuyLoad}
     };
 
     // The main function that runs the interface on a loop
@@ -24,8 +28,4 @@ namespace Interface {
             SCREEN_TO_FUNCTION.at(session.screen)(session);
         }
     }
-
-    //-------------------------------//
-    // Concrete screens below
-    
 }

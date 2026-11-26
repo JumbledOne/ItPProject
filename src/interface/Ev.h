@@ -18,6 +18,7 @@ namespace Ev {
 
     //MY PART (PAY BILLS & BUY LOAD)
     inline void PayBills(Session& session) {
+        session.RequestScreen(SCREENS::WALLET);
         int billerChoice;
         string biller, billingNumber;
         double amount;
@@ -71,6 +72,7 @@ namespace Ev {
     }
 
     inline void BuyLoad(Session& session) {
+        session.RequestScreen(SCREENS::WALLET);
         int networkChoice, loadChoice, loadAmount;
         string network, mobileNumber;
         char confirm;

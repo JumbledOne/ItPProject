@@ -8,21 +8,12 @@
 
 #include <session.h>
 
-// Forward declarations. Should probably be replaced later
-namespace Ev {
-    void PayBills(Session& session);
-    void BuyLoad(Session& session);
-}
-
 namespace Tan {
     using namespace std;
 
     inline int opt, walletOpt, PIN, attempt, activeAccount;
     inline long long accountNum, accNum, pw;
     inline double cash, RegisteredWallet, PresetWallet = 5000;
-
-    void CashIn(Session& session);
-    void CashOut(Session& session);
 
     inline void DisplayMainScreen(Session& session) {
         system("cls");
@@ -88,24 +79,7 @@ namespace Tan {
                     cout << "Access Granted! Enter any key to continue...";
                     _getch();
                     activeAccount = 0;
-                    do {
-                        system("cls");
-                        cout << "Welcome to ePESO!\n\nWallet Amount: PHP " << fixed << setprecision(2) << RegisteredWallet;
-                        cout << "\n[1] Cash In\n[2] Cash Out\n[3] Pay Bills\n[4] Buy Load\n[5] Log Out\nChoose option: ";
-                        cin >> walletOpt;
-                        switch (walletOpt) {
-                            case 1: CashIn(session); break;
-                            case 2: CashOut(session); break;
-                            case 3: Ev::PayBills(session); break;
-                            case 4: Ev::BuyLoad(session); break;
-                            case 5: break;
-                            default:
-                                cout << "Invalid option. Press any key to try again.";
-                                _getch();
-                                break;
-                        }
-                    } while (walletOpt != 5);
-                    session.RequestScreen(SCREENS::MAIN);
+                    session.RequestScreen(SCREENS::WALLET);
                     return;
                 }
                 cout << "Incorrect PIN.\n";
@@ -132,24 +106,7 @@ namespace Tan {
                     cout << "Access Granted. Enter any key to continue...";
                     _getch();
                     activeAccount = 1;
-                    do {
-                        system("cls");
-                        cout << "Welcome to ePESO!\n\nWallet Amount: PHP " << fixed << setprecision(2) << PresetWallet;
-                        cout << "\n[1] Cash In\n[2] Cash Out\n[3] Pay Bills\n[4] Buy Load\n[5] Log Out\nChoose option: ";
-                        cin >> walletOpt;
-                        switch (walletOpt) {
-                            case 1: CashIn(session); break;
-                            case 2: CashOut(session); break;
-                            case 3: Ev::PayBills(session); break;
-                            case 4: Ev::BuyLoad(session); break;
-                            case 5: break;
-                            default:
-                                cout << "Invalid option. Press any key to try again.";
-                                _getch();
-                                break;
-                        }
-                    } while (walletOpt != 5);
-                    session.RequestScreen(SCREENS::MAIN);
+                    session.RequestScreen(SCREENS::WALLET);
                     return;
                 }
                 cout << "Incorrect PIN.\n";
@@ -163,7 +120,29 @@ namespace Tan {
         session.RequestScreen(SCREENS::MAIN);
     }
 
+    // Wallet menu. Each action screen sets the screen back to WALLET before doing its work,
+    // so returning from it lands here again.
+    inline void Wallet(Session& session) {
+        system("cls");
+        cout << "Welcome to ePESO!\n\nWallet Amount: PHP " << fixed << setprecision(2)
+             << (activeAccount == 1 ? PresetWallet : RegisteredWallet);
+        cout << "\n[1] Cash In\n[2] Cash Out\n[3] Pay Bills\n[4] Buy Load\n[5] Log Out\nChoose option: ";
+        cin >> walletOpt;
+        switch (walletOpt) {
+            case 1: session.RequestScreen(SCREENS::CASH_IN); break;
+            case 2: session.RequestScreen(SCREENS::CASH_OUT); break;
+            case 3: session.RequestScreen(SCREENS::PAY_BILLS); break;
+            case 4: session.RequestScreen(SCREENS::BUY_LOAD); break;
+            case 5: session.RequestScreen(SCREENS::MAIN); break;
+            default:
+                cout << "Invalid option. Press any key to try again.";
+                _getch();
+                break;
+        }
+    }
+
     inline void CashIn(Session& session) {
+        session.RequestScreen(SCREENS::WALLET);
         system("cls");
         cout << "Welcome to ePESO!\n[CASH IN]\n";
         if (activeAccount == 1)
@@ -184,6 +163,7 @@ namespace Tan {
     }
 
     inline void CashOut(Session& session) {
+        session.RequestScreen(SCREENS::WALLET);
         system("cls");
         cout << "Welcome to ePESO!\n\n[CASH OUT]\n";
         if (activeAccount == 1)
@@ -204,5 +184,3 @@ namespace Tan {
         }
     }
 }
-
-#include <Ev.h>

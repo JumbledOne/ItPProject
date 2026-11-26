@@ -7,5 +7,8 @@ enum class SCREENS {
     REGISTRATION,
     LOGIN,
     CASH_IN,
-    CASH_OUT
+    CASH_OUT,
+    WALLET,
+    PAY_BILLS,
+    BUY_LOAD
 };
