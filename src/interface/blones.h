@@ -7,6 +7,7 @@
 
 #include <session.h>
 #include <transaction.h>
+#include <interface_utils.h>
 
 namespace Blones {
     
@@ -28,7 +29,7 @@ namespace Blones {
         }
 
         while (true) {
-            system("cls");
+            InterfaceUtils::ClearScreen();
             // Display transactions
             for (int i = 0; i < TRANSACTIONS_PER_PAGE; i++) {
                 // Check first if the index goes beyond the list size
@@ -57,7 +58,7 @@ namespace Blones {
                         break;
                 }
                 cout << "\nReference Number: " << transaction->reference_number;
-                cout << "\nAmount: " << transaction->amount;
+                cout << "\nAmount: " << InterfaceUtils::FloatToPeso(transaction->amount);
                 cout << "\n";
             }
             
@@ -93,10 +94,10 @@ namespace Blones {
             return;
         }
         while (true) {
-            system("cls");
+            InterfaceUtils::ClearScreen();
             // Display Info
             cout << "Account: " << session.active_account->name;
-            cout << "\nBalance: " << session.active_account->GetMoney();
+            cout << "\nBalance: " << InterfaceUtils::FloatToPeso(session.active_account->GetMoney());
             cout << "\n";
 
             // Input Guide
