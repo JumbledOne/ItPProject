@@ -18,23 +18,65 @@ namespace Blones {
             return;
         }
         system("cls"); // Clear screen first
+
         // Now the actual logic
-        int start_index = 0;
+        Transaction* transaction;
+        const std::vector<Transaction*>& transaction_list = session.active_account->GetTransactions();
+
+        // Page logic
+        int page = 0;
+        int page_count = (int)(ceil((float)transaction_list.size() / (float)TRANSACTIONS_PER_PAGE));
+
         while (true) {
             // Display transactions
-            for (Transaction* transaction : session.active_account->GetTransactions()) {
-                cout << "Reference Number: " << transaction->reference_number;
-                // Only display from and to if it's a transfer
-                // And check if both accounts exists
-                if (transaction->type == TRANSACTION_TYPE::TRANSFER &&
-                    session.database->HasAccount(transaction->from) &&
-                    session.database->HasAccount(transaction->to)) { 
+            for (int i = 0; i < TRANSACTIONS_PER_PAGE; i++) {
+                // Get transaction
+                transaction = transaction_list[(page * TRANSACTIONS_PER_PAGE) + i];
+                // Display type specific info
+                switch (transaction->type) {
+                    case TRANSACTION_TYPE::TRANSFER:
+                        cout << "Transfer";
+                        if (transaction->from && transaction->to) {
+                            cout << "\nFrom: " << transaction->from->name;
+                            cout << "\nTo: " << transaction->from->name;
+                        }
+                        break;
+                    case TRANSACTION_TYPE::CASH_IN:
+                        cout << "Cash In";
+                        break;
+                    case TRANSACTION_TYPE::CASH_OUT:
+                        cout << "Cash Out";
+                        break;
                 }
-                // Amount
-                cout << "Amount: " << transaction->amount;
-                cout << "From" << transaction->from
+                cout << "\nReference Number: " << transaction->reference_number;
+                cout << "\nAmount: " << transaction->amount;
+                cout << "\n";
             }
+            
+            // Display page control
+            cout << "\n[" << page << " / " << page_count << "]";
+            cout << "\n[1] Previous Page";
+            cout << "\n[2] Next Page";
+            cout << "\n[3] Return";
 
+            // Listen for input
+            int input;
+            cin >> input;
+            switch (input) {
+                case 1:
+                    if (page > 0) {
+                        page--;
+                    }
+                    break;
+                case 2:
+                    if (page < page_count) {
+                        page++;
+                    }
+                    break;
+                case 3:
+                    return;
+                    break;
+            }
         }
     }
 

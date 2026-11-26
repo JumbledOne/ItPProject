@@ -19,7 +19,7 @@ private:
 public:
     // These below just handle the creation and deletion. Handle it at the caller
     Account& CreateAccount();
-    Transaction& CreateTransaction(int from, int to, float amount);
+    Transaction& CreateTransaction(Account* from, Account* to, float amount); // Either can be null
 
     void DeleteAccount(int id);
     void DeleteTransaction(int id);

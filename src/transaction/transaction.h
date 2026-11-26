@@ -6,11 +6,13 @@ enum class TRANSACTION_TYPE {
     CASH_OUT
 };
 
+class Account; // Forward declared since account.h includes this file
+
 struct Transaction {
-    // We use account ids to avoid circular includes between this and account
     int reference_number;
-    int from = -1; 
-    int to = -1;
+    // Not owned. Null if there is no such account (e.g. no sender for a cash in)
+    Account* from = nullptr;
+    Account* to = nullptr;
     float amount;
     TRANSACTION_TYPE type = TRANSACTION_TYPE::TRANSFER;
 };
