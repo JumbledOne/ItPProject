@@ -10,5 +10,7 @@ enum class SCREENS {
     CASH_OUT,
     WALLET,
     PAY_BILLS,
-    BUY_LOAD
+    BUY_LOAD,
+    VIEW_TRANSACTIONS,
+    VIEW_ACCOUNT_INFO
 };

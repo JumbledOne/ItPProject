@@ -6,8 +6,10 @@
 
 #include <screens.h>
 #include <session.h>
+
 #include <tan.h>
 #include <Ev.h>
+#include <blones.h>
 
 namespace Interface {
     inline const std::unordered_map<SCREENS, std::function<void(Session&)>> SCREEN_TO_FUNCTION = {
@@ -18,7 +20,9 @@ namespace Interface {
         {SCREENS::CASH_OUT, Tan::CashOut},
         {SCREENS::WALLET, Tan::Wallet},
         {SCREENS::PAY_BILLS, Ev::PayBills},
-        {SCREENS::BUY_LOAD, Ev::BuyLoad}
+        {SCREENS::BUY_LOAD, Ev::BuyLoad},
+        {SCREENS::VIEW_TRANSACTIONS, Blones::ViewTransactions},
+        {SCREENS::VIEW_ACCOUNT_INFO, Blones::ViewAccountInformation}
     };
 
     // The main function that runs the interface on a loop
