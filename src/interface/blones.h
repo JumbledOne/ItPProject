@@ -110,27 +110,7 @@ namespace Blones {
         }
     }
 
-    constexpr int PIN_ATTEMPTS = 3;
-
-    // Asks for the PIN of the account. Returns true if it was entered correctly (within PIN_ATTEMPTS tries)
-    // Returns false if the line was left empty or the tries ran out (that is shown first), so the caller just goes back
-    inline bool AskForPin(const Account& account, const string& prompt) {
-        for (int attempt = 0; attempt < PIN_ATTEMPTS; attempt++) {
-            cout << prompt;
-            string input;
-            InterfaceUtils::ReadLineTrimmed(input);
-            if (input.empty()) {
-                return false;
-            }
-            if (Account::IsValidPin(input) && input == account.GetPin()) {
-                return true;
-            }
-            cout << "Incorrect PIN.\n";
-        }
-        cout << "Too many incorrect attempts. Press any key to continue...";
-        InterfaceUtils::AwaitInput();
-        return false;
-    }
+    constexpr int PIN_ATTEMPTS = 3; // How many times the current PIN can be entered wrong before the screen closes
 
     // Leaving the line empty returns to the wallet without changing anything
     inline void ChangeName(Session& session) {
@@ -167,10 +147,25 @@ namespace Blones {
         cout << "Leave a line empty to go back without changing your PIN.\n\n";
 
         // Check the current PIN first
-        if (!AskForPin(*account, "Enter your current PIN: ")) {
+        string input;
+        int attempts = PIN_ATTEMPTS;
+        while (attempts > 0) {
+            cout << "Enter your current PIN: ";
+            InterfaceUtils::ReadLineTrimmed(input);
+            if (input.empty()) {
+                return;
+            }
+            if (input == account->GetPin()) {
+                break;
+            }
+            attempts--;
+            cout << "Incorrect PIN.\n";
+        }
+        if (attempts == 0) {
+            cout << "Too many incorrect attempts. Press any key to continue...";
+            InterfaceUtils::AwaitInput();
             return;
         }
-        string input;
 
         // Now the new one. If the confirmation doesn't match it starts over from the new PIN
         while (true) {
@@ -215,25 +210,44 @@ namespace Blones {
         }
 
         InterfaceUtils::ClearScreen();
-        cout << "Deleting Account...\n";
-        cout << "This permanently deletes the account of " << account->name << " and its transaction history.\n";
-        if (account->GetMoney() > 0) {
-            cout << "The balance of " << InterfaceUtils::FloatToPeso(account->GetMoney()) << " will be lost.\n";
-        }
-        cout << "Leave a line empty to go back without deleting.\n\n";
+        cout << "Deleting Account...";
+        cout << "\nLeave a line empty to go back without deleting.\n\n";
 
-        if (!AskForPin(*account, "Enter your " + to_string(PIN_LENGTH) + "-DIGIT PIN: ")) {
+        string input;
+        int attempts = PIN_ATTEMPTS;
+        while (attempts > 0) {
+            cout << "Enter your " << PIN_LENGTH << "-DIGIT PIN: ";
+            InterfaceUtils::ReadLineTrimmed(input);
+            if (input.empty()) {
+                return;
+            }
+            if (input == account->GetPin()) {
+                break;
+            }
+            attempts--;
+            cout << "Incorrect PIN.\n";
+        }
+        if (attempts == 0) {
+            cout << "Too many incorrect attempts. Press any key to continue...";
+            InterfaceUtils::AwaitInput();
             return;
         }
 
-        string confirmation;
-        cout << "Confirm your PIN: ";
-        InterfaceUtils::ReadLineTrimmed(confirmation);
-        if (confirmation.empty()) {
-            return;
+        attempts = PIN_ATTEMPTS;
+        while (attempts > 0) {
+            cout << "Confirm your PIN: ";
+            InterfaceUtils::ReadLineTrimmed(input);
+            if (input.empty()) {
+                return;
+            }
+            if (input == account->GetPin()) {
+                break;
+            }
+            attempts--;
+            cout << "The PIN does not match.\n";
         }
-        if (confirmation != account->GetPin()) {
-            cout << "The PIN does not match so the account was not deleted. Press any key to continue...";
+        if (attempts == 0) {
+            cout << "Too many incorrect attempts. Press any key to continue...";
             InterfaceUtils::AwaitInput();
             return;
         }
