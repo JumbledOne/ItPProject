@@ -4,5 +4,8 @@
 
 enum class SCREENS {
     MAIN,
-    REGISTRATION
+    REGISTRATION,
+    LOGIN,
+    CASH_IN,
+    CASH_OUT
 };
