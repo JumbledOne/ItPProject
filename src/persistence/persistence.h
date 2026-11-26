@@ -6,18 +6,20 @@
 
 #include <database.h>
 
+const std::string FILE_NAME = "e_peso.txt";
+
 namespace Persistence {
     // Saves the database to disk
     inline void Save(Session& session) {
-        std::ofstream file("e_peso.txt");
+        std::ofstream file(FILE_NAME);
         if (!file.is_open()) {
             return;
         }
 
         // Serialize database values
         file << "DATABASE";
-        file <<	"\n\tLastAccountID " << -1;		
-	    file << "\n\tLastTransactionID " << -1;
+        file <<	"\n\tLastAccountID " << session.database->GetLastAccountId();		
+	    file << "\n\tLastTransactionID " << session.database->GetLastTransactionId();
         file << "\n";
         
         // Serialize accounts
@@ -35,11 +37,20 @@ namespace Persistence {
         for (const auto& [id, transaction] : session.database->GetTransactions()) {
 
         }
+
+        //
         file.close();
     }
 
     // Loads data onto the database class directly
-    inline void Load(Session& session) {
-
+    // Return value is whether it succeeded
+    // If it didn't succeed -> Make the default starting values
+    inline bool Load(Session& session) {
+        std::ifstream file(FILE_NAME);
+        if (!file.is_open()) {
+            return false;
+        }
+        file.close();
+        return true;
     }
 }

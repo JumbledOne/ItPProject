@@ -3,9 +3,16 @@
 #include <database.h>
 #include <interface.h>
 
+void CreateDefaultValues() {
+
+}
+
 int main() {
     std::unique_ptr<Session> session = std::make_unique<Session>(); // Owns the database. Everything else reaches it through session.database
-    Persistence::Load(*session);
+    bool load_result = Persistence::Load(*session);
+    if (!load_result) {
+        CreateDefaultValues();
+    }
 
     // Display Screen
     Interface::ShowInterface(*session); // Returns once a screen requests an exit
