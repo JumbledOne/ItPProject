@@ -1,7 +1,7 @@
 # How to build
 1. Run build.bat
 2. Once done and there were no errors, go to /build
-3. Open /build/app.exe
+3. Open /build/e_peso.exe
 
 # Potential issues
 * Only fully works on Windows since _getch and system("cls") might not work for other operating systems.

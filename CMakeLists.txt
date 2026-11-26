@@ -13,7 +13,7 @@ if(NOT APP_SOURCES)
     message(FATAL_ERROR "No C or C++ source files were found under ${CMAKE_CURRENT_SOURCE_DIR}/src")
 endif()
 
-add_executable(app ${APP_SOURCES})
+add_executable(e_peso ${APP_SOURCES})
 
 # Add src and every folder below it (any depth) as include directories, so
 # headers can be included as <account.h> regardless of which subfolder they are in.
@@ -30,12 +30,12 @@ foreach(header ${APP_HEADERS})
 endforeach()
 list(REMOVE_DUPLICATES APP_INCLUDE_DIRS)
 
-target_include_directories(app PRIVATE ${APP_INCLUDE_DIRS})
-target_compile_features(app PRIVATE cxx_std_17)
+target_include_directories(e_peso PRIVATE ${APP_INCLUDE_DIRS})
+target_compile_features(e_peso PRIVATE cxx_std_17)
 
 # Put the executable directly in the repository's build directory for every
 # configuration, including multi-config generators such as Visual Studio.
-set_target_properties(app PROPERTIES
+set_target_properties(e_peso PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build"
     RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_CURRENT_SOURCE_DIR}/build"
     RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}/build"
