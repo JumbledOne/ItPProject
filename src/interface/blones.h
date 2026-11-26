@@ -15,7 +15,7 @@ namespace Blones {
 
     constexpr int TRANSACTIONS_PER_PAGE = 3;
 
-    void ViewTransactions(Session& session) {
+    inline void ViewTransactions(Session& session) {
         // Check first if the account even exists
         if (!session.active_account) {
             return;
@@ -90,7 +90,7 @@ namespace Blones {
         }
     }
 
-    void ViewAccountInformation(Session& session) {
+    inline void ViewAccountInformation(Session& session) {
         // Check first if the account even exists
         if (!session.active_account) {
             return;

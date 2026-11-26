@@ -123,17 +123,32 @@ namespace Tan {
     // Wallet menu. Each action screen sets the screen back to WALLET before doing its work,
     // so returning from it lands here again.
     inline void Wallet(Session& session) {
-        system("cls");
-        cout << "Welcome to ePESO!\n\nWallet Amount: PHP " << fixed << setprecision(2)
+        InterfaceUtils::ClearScreen();
+
+        // Display account info
+        cout << "Account: " << session.active_account->name;
+        cout << "Welcome to ePESO!\n";
+        cout << "\nWallet Amount: PHP " << fixed << setprecision(2)
              << (activeAccount == 1 ? PresetWallet : RegisteredWallet);
-        cout << "\n[1] Cash In\n[2] Cash Out\n[3] Pay Bills\n[4] Buy Load\n[5] Log Out\nChoose option: ";
+
+        // Input guide
+        cout << "\n[1] Cash In";
+        cout << "\n[2] Cash Out";
+        cout << "\n[3] Pay Bills";
+        cout << "\n[4] Buy Load";
+        cout << "\n[5] View Transactions";
+        cout << "\n[6] Log Out";
+        cout << "\n" << InterfaceUtils::OPTION_PROMPT;
+
+        // Input
         cin >> walletOpt;
         switch (walletOpt) {
             case 1: session.RequestScreen(SCREENS::CASH_IN); break;
             case 2: session.RequestScreen(SCREENS::CASH_OUT); break;
             case 3: session.RequestScreen(SCREENS::PAY_BILLS); break;
             case 4: session.RequestScreen(SCREENS::BUY_LOAD); break;
-            case 5: session.RequestScreen(SCREENS::MAIN); break;
+            case 5: session.RequestScreen(SCREENS::VIEW_TRANSACTIONS); break;
+            case 6: session.RequestScreen(SCREENS::MAIN); break;
             default:
                 cout << "Invalid option. Press any key to try again.";
                 _getch();
