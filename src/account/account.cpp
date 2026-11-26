@@ -23,8 +23,12 @@ void Account::SetMoney(float new_money) {
     money = new_money;
 }
 
+bool Account::IsValidPhoneNumber(const std::string& phone_number) {
+    return phone_number.size() == PHONE_NUMBER_LENGTH;
+}
+
 bool Account::SetPhoneNumber(std::string new_number){
-    if (new_number.size() != PHONE_NUMBER_LENGTH) {
+    if (!IsValidPhoneNumber(new_number)) {
         return false;
     }
     phone_number = new_number;

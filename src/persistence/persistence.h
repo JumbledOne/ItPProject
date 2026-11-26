@@ -5,22 +5,15 @@
 #include <fstream>
 #include <string>
 #include <cctype>
+#include <cmath>
 
 #include <session.h>
 #include <database.h>
+#include <parser.h>
 
 const std::string FILE_NAME = "e_peso.txt";
 
 namespace Persistence {
-
-    struct AccountProxy {
-        int id;
-        int name;
-    };
-
-    struct TransactionProxy {
-        int id;
-    };
 
     // Saves the database to disk
     // Return value is whether it succeeded
@@ -73,21 +66,7 @@ namespace Persistence {
             return false;
         }
 
-        std::array<std::string, 2> command; // [0] is the command, [1] is the value
-        bool reading_value = false; // False while still reading the command
-
-        std::string token = "";
-        char character;
-        while (file.get(character)) {
-            // New lines clear the command array
-            if (character == '\n') {
-                command[0] = "";
-                command[1] = "";
-            }
-            if (std::isspace(character)) {
-                token = "";
-            }
-        }
+        Parser::ParseSaveFile(file, session);
 
         file.close();
         return true;
