@@ -23,6 +23,9 @@ public:
     int GetId() const;
 
     float GetMoney() const;
+    bool HasSufficientBalance(float amount) const;
+    bool AddMoney(float amount);
+    bool DeductMoney(float amount);
 
     bool SetPhoneNumber(std::string new_number); // Return value is whether this succeeded
     std::string GetPhoneNumber() const;

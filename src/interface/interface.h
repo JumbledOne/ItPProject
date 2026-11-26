@@ -18,7 +18,8 @@ namespace Interface {
         {SCREENS::CASH_OUT, Tan::CashOut},
         {SCREENS::WALLET, Tan::Wallet},
         {SCREENS::PAY_BILLS, Ev::PayBills},
-        {SCREENS::BUY_LOAD, Ev::BuyLoad}
+        {SCREENS::BUY_LOAD, Ev::BuyLoad},
+        {SCREENS::SEND_MONEY, Tan::SendMoney}
     };
 
     // The main function that runs the interface on a loop
