@@ -1,186 +1,151 @@
 #pragma once
-
 #include <iostream>
-#include <stdlib.h>
 #include <iomanip>
+#include <limits>
+#include <string>
+#include <cmath>
 #include <conio.h>
-#include <optional>
-
 #include <session.h>
+#include <transfer.h>
 
 namespace Tan {
-    using namespace std;
-
-    inline int opt, walletOpt, PIN, attempt, activeAccount;
-    inline long long accountNum, accNum, pw;
-    inline double cash, RegisteredWallet, PresetWallet = 5000;
-
-    inline void DisplayMainScreen(Session& session) {
-        system("cls");
-        cout << "Welcome to ePESO!\n\n";
-        cout << "[1] Log In\n[2] Register\n[3] Exit\nChoose option: ";
-        cin >> opt;
-        switch (opt) {
-            case 1: session.RequestScreen(SCREENS::LOGIN); break;
-            case 2:
-                RegisteredWallet = 0;
-                session.RequestScreen(SCREENS::REGISTRATION);
-                break;
-            case 3:
-                cout << "Exiting program...";
-                session.RequestExit(0);
-                break;
-            default:
-                cout << "Invalid option. Press any key to continue...";
-                _getch();
-                break;
-        }
-    }
-
-    inline void Register(Session& session) {
-        system("cls");
-        cout << "Welcome to ePESO!\n[CREATING ACCOUNT]\n\n";
-        cout << "Enter account number (10 Digits): ";
-        cin >> accountNum;
-        if (accountNum < 999999999) {
-            cout << "Invalid account number. Press any key to try again.";
-            _getch();
-            session.RequestScreen(SCREENS::MAIN);
-            return;
-        }
-        cout << "Enter a 4-DIGIT PIN: ";
-        cin >> PIN;
-        if (PIN < 999) {
-            cout << "Invalid PIN. Press any key to try again.";
-            _getch();
-            session.RequestScreen(SCREENS::MAIN);
-            return;
-        }
-        cout << "Confirm PIN: ";
-        cin >> pw;
-        if (pw != PIN) {
-            cout << "PIN does not match. Press any key to try again.";
-            _getch();
-            session.RequestScreen(SCREENS::MAIN);
-            return;
-        }
-
-        cout << "Account created! Press any key to continue...";
-        _getch();
-        system("cls");
-        cout << "Welcome to ePESO!\nLogging In...\n\nEnter account number: ";
-        cin >> accNum;
-        if (accNum == accountNum) {
-            attempt = 3;
-            do {
-                cout << "Enter PIN: ";
-                cin >> pw;
-                if (pw == PIN) {
-                    cout << "Access Granted! Enter any key to continue...";
-                    _getch();
-                    activeAccount = 0;
-                    session.RequestScreen(SCREENS::WALLET);
-                    return;
-                }
-                cout << "Incorrect PIN.\n";
-                --attempt;
-            } while (attempt > 0);
-            cout << "Access Denied. Exiting Program.";
-        } else {
-            cout << "Account number not registered. Press any key to continue...";
-            _getch();
-        }
-        session.RequestScreen(SCREENS::MAIN);
-    }
-
-    inline void Login(Session& session) {
-        system("cls");
-        cout << "Welcome to ePESO!\nLogging In...\n\nEnter account number: ";
-        cin >> accountNum;
-        if (accountNum == 9215213192) {
-            attempt = 3;
-            do {
-                cout << "Enter PIN: ";
-                cin >> PIN;
-                if (PIN == 4444) {
-                    cout << "Access Granted. Enter any key to continue...";
-                    _getch();
-                    activeAccount = 1;
-                    session.RequestScreen(SCREENS::WALLET);
-                    return;
-                }
-                cout << "Incorrect PIN.\n";
-                --attempt;
-            } while (attempt > 0);
-            cout << "Access Denied. Exiting Program.";
-        } else {
-            cout << "Account number not registered. Press any key to continue...";
-            _getch();
-        }
-        session.RequestScreen(SCREENS::MAIN);
-    }
-
-    // Wallet menu. Each action screen sets the screen back to WALLET before doing its work,
-    // so returning from it lands here again.
-    inline void Wallet(Session& session) {
-        system("cls");
-        cout << "Welcome to ePESO!\n\nWallet Amount: PHP " << fixed << setprecision(2)
-             << (activeAccount == 1 ? PresetWallet : RegisteredWallet);
-        cout << "\n[1] Cash In\n[2] Cash Out\n[3] Pay Bills\n[4] Buy Load\n[5] Log Out\nChoose option: ";
-        cin >> walletOpt;
-        switch (walletOpt) {
-            case 1: session.RequestScreen(SCREENS::CASH_IN); break;
-            case 2: session.RequestScreen(SCREENS::CASH_OUT); break;
-            case 3: session.RequestScreen(SCREENS::PAY_BILLS); break;
-            case 4: session.RequestScreen(SCREENS::BUY_LOAD); break;
-            case 5: session.RequestScreen(SCREENS::MAIN); break;
-            default:
-                cout << "Invalid option. Press any key to try again.";
-                _getch();
-                break;
-        }
-    }
-
-    inline void CashIn(Session& session) {
-        session.RequestScreen(SCREENS::WALLET);
-        system("cls");
-        cout << "Welcome to ePESO!\n[CASH IN]\n";
-        if (activeAccount == 1)
-            cout << "Wallet Amount: PHP " << fixed << setprecision(2) << PresetWallet;
-        else
-            cout << "Wallet Amount: PHP " << fixed << setprecision(2) << RegisteredWallet;
-        cout << "\nEnter amount to cash in: ";
-        cin >> cash;
-        if (cash <= 50000 && cash > 0) {
-            cout << "Press any key to confirm cash in...";
-            _getch();
-            if (activeAccount == 1) PresetWallet += cash;
-            else RegisteredWallet += cash;
-        } else {
-            cout << "Invalid amount. Please press any key to try again.";
-            _getch();
-        }
-    }
-
-    inline void CashOut(Session& session) {
-        session.RequestScreen(SCREENS::WALLET);
-        system("cls");
-        cout << "Welcome to ePESO!\n\n[CASH OUT]\n";
-        if (activeAccount == 1)
-            cout << "Wallet Amount: PHP " << fixed << setprecision(2) << PresetWallet;
-        else
-            cout << "Wallet Amount: PHP " << fixed << setprecision(2) << RegisteredWallet;
-        cout << "\nEnter amount to cash out: ";
-        cin >> cash;
-        double balance = activeAccount == 1 ? PresetWallet : RegisteredWallet;
-        if (cash > 0 && cash <= balance) {
-            cout << "Press any key to confirm cash out...";
-            _getch();
-            if (activeAccount == 1) PresetWallet -= cash;
-            else RegisteredWallet -= cash;
-        } else {
-            cout << "Invalid amount. Please press any key to try again.";
-            _getch();
-        }
+using namespace std;
+inline void Pause() { cout << "\nPress any key to continue..."; _getch(); }
+inline void ClearInput() { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); }
+inline bool ReadAmount(float& amount) {
+    if (!(cin >> amount)) { ClearInput(); return false; }
+    return isfinite(amount) && amount > 0;
+}
+inline Account* Current(Session& session) {
+    if (session.account < 0 || !session.database->HasAccount(session.account)) return nullptr;
+    return &session.database->GetAccount(session.account);
+}
+inline int FindPhone(Session& session, const string& phone) {
+    for (const auto& entry : session.database->GetAccounts())
+        if (entry.second.GetPhoneNumber() == phone) return entry.first;
+    return -1;
+}
+inline void DisplayMainScreen(Session& session) {
+    cout << "\nWelcome to ePESO!\n[1] Log In\n[2] Register\n[3] Exit\nChoose option: ";
+    int choice;
+    if (!(cin >> choice)) { ClearInput(); cout << "Invalid option.\n"; return; }
+    switch(choice) {
+        case 1: session.RequestScreen(SCREENS::LOGIN); break;
+        case 2: session.RequestScreen(SCREENS::REGISTRATION); break;
+        case 3: session.RequestExit(0); break;
+        default: cout << "Invalid option.\n";
     }
 }
+inline void Register(Session& session) {
+    session.RequestScreen(SCREENS::MAIN);
+    string name, phone, pin, confirm;
+    cout << "\n[CREATING ACCOUNT]\nFull name: ";
+    getline(cin >> ws, name);
+    cout << "Mobile number (11 digits): "; cin >> phone;
+    cout << "4-digit PIN: "; cin >> pin;
+    cout << "Confirm PIN: "; cin >> confirm;
+    if (name.empty() || phone.size() != PHONE_NUMBER_LENGTH ||
+        phone.find_first_not_of("0123456789") != string::npos ||
+        phone.substr(0, 2) != "09" || pin.size() != PIN_LENGTH ||
+        pin.find_first_not_of("0123456789") != string::npos || pin != confirm ||
+        FindPhone(session, phone) != -1) {
+        cout << "Invalid or duplicate account details.\n"; Pause(); return;
+    }
+    Account& user = session.database->CreateAccount();
+    user.name = name;
+    user.SetPhoneNumber(phone);
+    user.SetPin(pin);
+    cout << "Account created! Account ID: " << user.GetId() << "\n";
+    Pause();
+}
+inline void Login(Session& session) {
+    session.RequestScreen(SCREENS::MAIN);
+    string phone, pin;
+    cout << "\n[LOGIN]\nMobile number: "; cin >> phone;
+    int id = FindPhone(session, phone);
+    for (int tries = 0; tries < 3; ++tries) {
+        cout << "PIN: "; cin >> pin;
+        if (id >= 0 && session.database->GetAccount(id).GetPin() == pin) {
+            session.account = id;
+            session.RequestScreen(SCREENS::WALLET);
+            return;
+        }
+        cout << "Incorrect credentials.\n";
+    }
+    Pause();
+}
+inline void Wallet(Session& session) {
+    Account* user = Current(session);
+    if (!user) { session.RequestScreen(SCREENS::MAIN); return; }
+    cout << fixed << setprecision(2);
+    cout << "\nWelcome to ePESO!\n" << user->name << " (Account ID " << user->GetId() << ")\n"
+         << "Wallet Amount: PHP " << user->GetMoney() << "\n"
+         << "[1] Check Balance\n[2] Cash In\n[3] Cash Out\n[4] Send Money\n"
+         << "[5] Pay Bills\n[6] Buy Load\n[7] Log Out\nChoose option: ";
+    int choice;
+    if (!(cin >> choice)) { ClearInput(); cout << "Invalid option.\n"; return; }
+    switch (choice) {
+        case 1: cout << "Available balance: PHP " << user->GetMoney() << "\n"; Pause(); break;
+        case 2: session.RequestScreen(SCREENS::CASH_IN); break;
+        case 3: session.RequestScreen(SCREENS::CASH_OUT); break;
+        case 4: session.RequestScreen(SCREENS::SEND_MONEY); break;
+        case 5: session.RequestScreen(SCREENS::PAY_BILLS); break;
+        case 6: session.RequestScreen(SCREENS::BUY_LOAD); break;
+        case 7: session.account = -1; session.RequestScreen(SCREENS::MAIN); break;
+        default: cout << "Invalid option.\n";
+    }
+}
+inline void CashIn(Session& session) {
+    session.RequestScreen(SCREENS::WALLET);
+    Account* user = Current(session);
+    if (!user) return;
+    float amount;
+    cout << "\n[CASH IN]\nAmount (max PHP 50000): ";
+    if (!ReadAmount(amount) || amount > 50000) { cout << "Invalid amount.\n"; Pause(); return; }
+    char confirm; cout << "Confirm? (Y/N): "; cin >> confirm;
+    if ((confirm == 'Y' || confirm == 'y') && user->AddMoney(amount))
+        cout << "Cash in successful. New balance: PHP " << fixed << setprecision(2) << user->GetMoney() << "\n";
+    else cout << "Cash in cancelled or failed.\n";
+    Pause();
+}
+inline void CashOut(Session& session) {
+    session.RequestScreen(SCREENS::WALLET);
+    Account* user = Current(session);
+    if (!user) return;
+    float amount;
+    cout << "\n[CASH OUT]\nAmount: ";
+    if (!ReadAmount(amount) || !user->HasSufficientBalance(amount)) {
+        cout << "Invalid amount or insufficient funds.\n"; Pause(); return;
+    }
+    char confirm; cout << "Confirm? (Y/N): "; cin >> confirm;
+    if ((confirm == 'Y' || confirm == 'y') && user->DeductMoney(amount))
+        cout << "Cash out successful. New balance: PHP " << fixed << setprecision(2) << user->GetMoney() << "\n";
+    else cout << "Cash out cancelled or failed.\n";
+    Pause();
+}
+inline void SendMoney(Session& session) {
+    session.RequestScreen(SCREENS::WALLET);
+    Account* sender = Current(session);
+    if (!sender) return;
+    string phone;
+    cout << "\n[SEND MONEY]\nAvailable balance: PHP " << fixed << setprecision(2)
+         << sender->GetMoney() << "\nRecipient mobile number: "; cin >> phone;
+    int recipientId = FindPhone(session, phone);
+    if (recipientId < 0 || recipientId == session.account) {
+        cout << "Recipient not found or self-transfer.\n"; Pause(); return;
+    }
+    cout << "Recipient: " << session.database->GetAccount(recipientId).name << "\n";
+    float amount;
+    cout << "Amount: PHP ";
+    if (!ReadAmount(amount) || !sender->HasSufficientBalance(amount)) {
+        cout << "Invalid amount or insufficient funds.\n"; Pause(); return;
+    }
+    char confirm; cout << "Confirm transfer? (Y/N): "; cin >> confirm;
+    if (confirm != 'Y' && confirm != 'y') { cout << "Cancelled.\n"; Pause(); return; }
+    if (TransferMoney(*session.database, session.account, recipientId, amount)) {
+        cout << "Transfer successful! Reference: " << session.database->GetLastTransactionId()
+             << "\nRemaining balance: PHP " << sender->GetMoney() << "\n";
+    } else cout << "Transfer failed.\n";
+    Pause();
+}
+} // namespace Tan
