@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include <screens.h>
 #include <account.h>
 
@@ -7,5 +9,9 @@
 class Session {
 public:
     int account = 0;
-    SCREENS screen = SCREENS::MAIN; // Placeholder value showing what screen th e user is in
+    SCREENS screen = SCREENS::NONE;
+    std::optional<int> exit_code = std::nullopt;
+
+    void SwitchScreen(SCREENS new_screen); // Can't be NONE
+    void RequestExit(int new_exit_code);
 };

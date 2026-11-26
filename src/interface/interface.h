@@ -28,6 +28,9 @@ namespace Interface {
                 last_screen = session.screen;
                 interface_result = SCREEN_TO_FUNCTION.at(session.screen)(session);
             }
+            else { // Fallback just in case
+                session.screen = SCREENS::MAIN;
+            }
         }
         return interface_result; // Passed onto main.cpp so it knows how to exit
     }
