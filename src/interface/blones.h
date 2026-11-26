@@ -57,7 +57,7 @@ namespace Blones {
                         cout << "Cash Out";
                         break;
                 }
-                cout << "\nReference Number: " << transaction->reference_number;
+                cout << "\nReference Number: " << InterfaceUtils::FormatReferenceNumber(transaction->reference_number);
                 cout << "\nAmount: " << InterfaceUtils::FloatToPeso(transaction->amount);
                 cout << "\n";
             }
@@ -69,6 +69,7 @@ namespace Blones {
             cout << "\n[3] Return";
 
             // Listen for input
+            cout << "\n" << InterfaceUtils::OPTION_PROMPT;
             int input;
             cin >> input;
             switch (input) {
@@ -83,6 +84,7 @@ namespace Blones {
                     }
                     break;
                 case 3:
+                    session.RequestScreen(SCREENS::VIEW_ACCOUNT_INFO);
                     return;
             }
         }
@@ -103,19 +105,22 @@ namespace Blones {
             // Input Guide
             cout << "[1] Change Name";
             cout << "[2] View Transactions";
-            cout << "[3] Return To Menu";
+            cout << "[3] Log Out";
 
             // Handle Input
+            cout << "\n" << InterfaceUtils::OPTION_PROMPT;
             int input;
             cin >> input;
             switch (input) {
                 case 1:
                     break;
                 case 2:
-                    break;
+                    session.RequestScreen(SCREENS::VIEW_TRANSACTIONS);
+                    return;
                 case 3:
-                    
-                    break;
+                    session.active_account = nullptr; // Maybe add a log out function?
+                    session.RequestScreen(SCREENS::MAIN);
+                    return;
             }
         }
     }
