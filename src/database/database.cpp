@@ -1,7 +1,17 @@
 #include <database.h>
 
-Account& Database::CreateAccount(const std::string& name, float initial_balance) {
-    int id = ++last_account_id; // Increment first so the first account gets id 0
+// NOTE: Forcing an id that is in use deletes that account. If it's the active account call Session::LogOut() first
+Account& Database::CreateAccount(const std::string& name, float initial_balance, int force_id) {
+    int id;
+    if (force_id >= 0) {
+        DeleteAccount(force_id); // Does nothing if there is no such account
+        id = force_id;
+        if (id > last_account_id) {
+            last_account_id = id;
+        }
+    } else {
+        id = ++last_account_id; // Increment first so the first account gets id 0
+    }
     Account& account = accounts[id]; // Apparently this constructs it automatically
     account.SetId(id);
     account.name = name;
@@ -9,8 +19,17 @@ Account& Database::CreateAccount(const std::string& name, float initial_balance)
     return account;
 }
 
-Transaction& Database::CreateTransaction(Account* from, Account* to, float amount, TRANSACTION_TYPE type) {
-    int ref = ++last_transaction_id;
+Transaction& Database::CreateTransaction(Account* from, Account* to, float amount, TRANSACTION_TYPE type, int force_id) {
+    int ref;
+    if (force_id >= 0) {
+        DeleteTransaction(force_id); // Does nothing if there is no such transaction
+        ref = force_id;
+        if (ref > last_transaction_id) {
+            last_transaction_id = ref;
+        }
+    } else {
+        ref = ++last_transaction_id;
+    }
     // Create transaction object
     Transaction& transaction = transactions[ref];
     transaction.reference_number = ref;
@@ -88,4 +107,16 @@ int Database::GetLastAccountId() const {
 
 int Database::GetLastTransactionId() const {
     return last_transaction_id;
+}
+
+void Database::SetLastAccountId(int id) {
+    if (id > last_account_id) {
+        last_account_id = id;
+    }
+}
+
+void Database::SetLastTransactionId(int id) {
+    if (id > last_transaction_id) {
+        last_transaction_id = id;
+    }
 }

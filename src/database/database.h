@@ -18,8 +18,11 @@ private:
     
 public:
     // These below just handle the creation and deletion. Handle it at the caller
-    Account& CreateAccount(const std::string& name, float initial_balance);
-    Transaction& CreateTransaction(Account* from, Account* to, float amount, TRANSACTION_TYPE type = TRANSACTION_TYPE::TRANSFER); // Either can be null
+    // force_id picks the id instead of using last id + 1. It can't be negative, so -1 means it isn't forced
+    // If something already has that id it is deleted first (for a transaction that gives the money back)
+    // The last id is raised to force_id if it was higher so new ones can't collide. Used for loading from a save
+    Account& CreateAccount(const std::string& name, float initial_balance, int force_id = -1);
+    Transaction& CreateTransaction(Account* from, Account* to, float amount, TRANSACTION_TYPE type = TRANSACTION_TYPE::TRANSFER, int force_id = -1); // Either can be null
 
     void DeleteAccount(int id);
     void DeleteTransaction(int id);
@@ -36,4 +39,9 @@ public:
 
     int GetLastAccountId() const;
     int GetLastTransactionId() const;
+
+    // Only for the loading system, to restore the ids from the save (the last ones could have been deleted)
+    // They can only raise the id. A lower one would let new ids collide with existing ones, so it's ignored
+    void SetLastAccountId(int id);
+    void SetLastTransactionId(int id);
 };
