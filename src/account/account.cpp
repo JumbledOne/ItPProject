@@ -1,4 +1,5 @@
 #include <account.h>
+#include <cmath>
 
 // Can only be called once
 void Account::SetId(int new_id) {
@@ -16,12 +17,15 @@ float Account::GetMoney() const {
 }
 
 bool Account::HasSufficientBalance(float amount) const {
-    return amount > 0 && money >= amount;
+    return std::isfinite(amount) && amount > 0 &&
+           std::isfinite(money) && money >= amount;
 }
 
-// Adds a positive amount to the wallet balance.
+// Adds a valid positive amount to the wallet balance.
 bool Account::AddMoney(float amount) {
-    if (amount <= 0) {
+    if (!std::isfinite(amount) || amount <= 0 ||
+        !std::isfinite(money) ||
+        !std::isfinite(money + amount)) {
         return false;
     }
 
@@ -29,7 +33,7 @@ bool Account::AddMoney(float amount) {
     return true;
 }
 
-// Deducts money only when the balance is sufficient.
+// Deducts money only when sufficient funds are available.
 bool Account::DeductMoney(float amount) {
     if (!HasSufficientBalance(amount)) {
         return false;
