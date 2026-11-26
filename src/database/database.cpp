@@ -28,7 +28,7 @@ Transaction& Database::CreateTransaction(Account* from, Account* to, float amoun
     return transaction;
 }
 
-// NOTE: Session::active_account points into this map. Set it to nullptr first if this is the active account
+// NOTE: Session's active account points into this map. Call Session::LogOut() first if this is the active account
 void Database::DeleteAccount(int id) {
     if (!HasAccount(id)) {
         return;

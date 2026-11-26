@@ -4,6 +4,18 @@ Session::Session() {
     database = std::make_unique<Database>();
 }
 
+void Session::LogIn(Account& account) {
+    active_account = &account;
+}
+
+void Session::LogOut() {
+    active_account = nullptr;
+}
+
+Account* Session::GetActiveAccount() const {
+    return active_account;
+}
+
 void Session::RequestScreen(SCREENS new_screen) {
     screen = new_screen;
 }

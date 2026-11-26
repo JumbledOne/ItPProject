@@ -17,11 +17,11 @@ namespace Blones {
 
     inline void ViewTransactions(Session& session) {
         // Check first if the account even exists
-        if (!session.active_account) {
+        if (!session.GetActiveAccount()) {
             return;
         }
         // Now the actual logic
-        const std::vector<Transaction*>& transaction_list = session.active_account->GetTransactions();
+        const std::vector<Transaction*>& transaction_list = session.GetActiveAccount()->GetTransactions();
         int page = 0;
         int page_count = (int)(ceil((float)transaction_list.size() / (float)TRANSACTIONS_PER_PAGE));
         if (page_count == 0) {
@@ -92,14 +92,14 @@ namespace Blones {
 
     inline void ViewAccountInformation(Session& session) {
         // Check first if the account even exists
-        if (!session.active_account) {
+        if (!session.GetActiveAccount()) {
             return;
         }
         while (true) {
             InterfaceUtils::ClearScreen();
             // Display Info
-            cout << "Account: " << session.active_account->name;
-            cout << "\nBalance: " << InterfaceUtils::FloatToPeso(session.active_account->GetMoney());
+            cout << "Account: " << session.GetActiveAccount()->name;
+            cout << "\nBalance: " << InterfaceUtils::FloatToPeso(session.GetActiveAccount()->GetMoney());
             cout << "\n";
 
             // Input Guide
@@ -118,7 +118,7 @@ namespace Blones {
                     session.RequestScreen(SCREENS::VIEW_TRANSACTIONS);
                     return;
                 case 3:
-                    session.active_account = nullptr; // Maybe add a log out function?
+                    session.LogOut();
                     session.RequestScreen(SCREENS::MAIN);
                     return;
             }

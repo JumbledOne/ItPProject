@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <conio.h>
 #include <optional>
+#include <limits>
 
 #include <session.h>
 #include <interface_utils.h>
@@ -42,71 +43,51 @@ namespace Tan {
     inline void Register(Session& session) {
         system("cls");
         cout << "Welcome to ePESO!\n[CREATING ACCOUNT]\n\n";
-        long long accountNum, accNum, pw;
-        int PIN, attempt;
+        int PIN, confirm_PIN;
 
-        // Account Number input
-        cout << "Enter account number (10 Digits): ";
-        cin >> accountNum;
-        if (to_string(accountNum).size() > InterfaceUtils::REFERENCE_NUMBER_LENGTH) {
-            cout << "Invalid account number. Press any key to try again.";
-            _getch();
-            session.RequestScreen(SCREENS::MAIN);
-            return;
-        }
-        if (session.database->HasAccount(accountNum)) {
-            cout << "Account already exists. Press any key to try again.";
-            _getch();
-            session.RequestScreen(SCREENS::MAIN);
-            return;
-        }
+        // Name input
+        string name_input;
+        cout << "Enter your name: ";
+        InterfaceUtils::ClearInput(); // Drop the Enter left over from the menu choice
+        getline(cin, name_input);
 
         // Pin Inputs
-        cout << "Enter a 4-DIGIT PIN: ";
-        cin >> PIN;
-        if (PIN < 999) {
-            cout << "Invalid PIN. Press any key to try again.";
-            _getch();
-            session.RequestScreen(SCREENS::MAIN);
-            return;
+        while (true) {
+            cout << "Enter a " << PIN_LENGTH << "-DIGIT PIN: ";
+            cin >> PIN;
+            if (cin.fail() || PIN < 0 || to_string(PIN).size() != PIN_LENGTH) {
+                InterfaceUtils::ClearInput(); // Throw away bad input
+                cout << "Invalid PIN. Press any key to try again.\n";
+                _getch();
+                continue;
+            }
+            break;
         }
 
         // Pin confirmation
-        cout << "Confirm PIN: ";
-        cin >> pw;
-        if (pw != PIN) {
-            cout << "PIN does not match. Press any key to try again.";
-            _getch();
-            session.RequestScreen(SCREENS::MAIN);
-            return;
+        while (true) {
+            cout << "Confirm PIN: ";
+            cin >> confirm_PIN;
+            if (cin.fail() || confirm_PIN != PIN) {
+                InterfaceUtils::ClearInput();
+                cout << "PIN does not match. Press any key to try again.\n";
+                _getch();
+                continue;
+            }
+            break;
         }
 
-        cout << "Account created! Press any key to continue...";
+        // Only create the account once everything is valid so a failed attempt can't leave one behind
+        Account& account = session.database->CreateAccount(name_input, 0);
+        account.SetPin(PIN);
+
+        // Now log in
+        session.LogIn(account);
+        activeAccount = 0; // Wallet still reads the global RegisteredWallet for now
+        cout << "Account created! Your account number is " << InterfaceUtils::FormatReferenceNumber(account.GetId())
+             << ". Press any key to continue...";
         _getch();
-        system("cls");
-        cout << "Welcome to ePESO!\nLogging In...\n\nEnter account number: ";
-        cin >> accNum;
-        if (accNum == accountNum) {
-            attempt = 3;
-            do {
-                cout << "Enter PIN: ";
-                cin >> pw;
-                if (pw == PIN) {
-                    cout << "Access Granted! Enter any key to continue...";
-                    _getch();
-                    activeAccount = 0;
-                    session.RequestScreen(SCREENS::WALLET);
-                    return;
-                }
-                cout << "Incorrect PIN.\n";
-                --attempt;
-            } while (attempt > 0);
-            cout << "Access Denied. Exiting Program.";
-        } else {
-            cout << "Account number not registered. Press any key to continue...";
-            _getch();
-        }
-        session.RequestScreen(SCREENS::MAIN);
+        session.RequestScreen(SCREENS::WALLET);
     }
 
     inline void Login(Session& session) {
@@ -143,7 +124,7 @@ namespace Tan {
                     cout << "Access Granted. Enter any key to continue...";
                     _getch();
                     activeAccount = 1;
-                    session.active_account = &account;
+                    session.LogIn(account);
                     session.RequestScreen(SCREENS::WALLET);
                     return;
                 }
@@ -165,7 +146,7 @@ namespace Tan {
 
         // Display account info
         cout << "Welcome to ePESO!\n";
-        cout << "\nName: " << session.active_account->name;
+        cout << "\nName: " << session.GetActiveAccount()->name;
         cout << "\nWallet Amount: PHP " << fixed << setprecision(2)
              << (activeAccount == 1 ? PresetWallet : RegisteredWallet);
 
@@ -187,7 +168,10 @@ namespace Tan {
             case 3: session.RequestScreen(SCREENS::PAY_BILLS); break;
             case 4: session.RequestScreen(SCREENS::BUY_LOAD); break;
             case 5: session.RequestScreen(SCREENS::VIEW_TRANSACTIONS); break;
-            case 6: session.RequestScreen(SCREENS::MAIN); break;
+            case 6:
+                session.LogOut();
+                session.RequestScreen(SCREENS::MAIN);
+                break;
             default:
                 cout << "Invalid option. Press any key to try again.";
                 _getch();

@@ -3,6 +3,8 @@
 #include <cmath>
 #include <cstdlib>
 #include <iomanip>
+#include <iostream>
+#include <limits>
 #include <sstream>
 #include <string>
 
@@ -30,6 +32,13 @@ namespace InterfaceUtils {
 
     inline void ClearScreen() {
         system("cls");
+    }
+
+    // Resets cin's error state and throws away the rest of the line
+    // Use after a failed read, or before getline to drop the Enter left over from a previous cin >>
+    inline void ClearInput() {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
 
     // Pads with leading zeros and groups the digits, e.g. 42 -> "00000 00042"
