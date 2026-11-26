@@ -17,6 +17,16 @@ private:
     int last_transaction_id = -1; // Same as above
     
 public:
-    void CreateAccount();
-    void CreateTransaction(int from, int to, int amount);
+    // These below just handle the creation and deletion. Handle it at the caller
+    Account& CreateAccount();
+    Transaction& CreateTransaction(int from, int to, float amount);
+
+    void DeleteAccount(int id);
+    void DeleteTransaction(int id);
+
+    // Throw std::out_of_range if the id doesn't exist
+    Account& GetAccount(int id);
+    const Account& GetAccount(int id) const;
+    Transaction& GetTransaction(int id);
+    const Transaction& GetTransaction(int id) const;
 };
