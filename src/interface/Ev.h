@@ -19,6 +19,10 @@ namespace Ev {
     //MY PART (PAY BILLS & BUY LOAD)
     inline void PayBills(Session& session) {
         session.RequestScreen(SCREENS::WALLET);
+        Account* account = session.GetActiveAccount();
+        if (!account) {
+            return;
+        }
         int billerChoice;
         string biller, billingNumber;
         double amount;
@@ -47,8 +51,7 @@ namespace Ev {
             cout << "Invalid amount. Press any key to continue..."; _getch();
             return;
         }
-        double balance = Tan::activeAccount == 1 ? Tan::PresetWallet : Tan::RegisteredWallet;
-        if (amount > balance) {
+        if (!account->HasSufficientBalance((float)amount)) {
             cout << "Insufficient balance. Press any key to continue..."; _getch();
             return;
         }
@@ -60,19 +63,22 @@ namespace Ev {
             return;
         }
 
-        if (Tan::activeAccount == 1) Tan::PresetWallet -= amount;
-        else Tan::RegisteredWallet -= amount;
+        account->DeductMoney((float)amount);
         cout << "\n=== PAYMENT RECEIPT ===\n"
             << "Biller: " << biller << '\n'
             << "Billing number: " << billingNumber << '\n'
             << "Amount paid: PHP " << amount << '\n'
-            << "Remaining balance: PHP " << (Tan::activeAccount == 1 ? Tan::PresetWallet : Tan::RegisteredWallet) << '\n';
+            << "Remaining balance: PHP " << account->GetMoney() << '\n';
         //input Transaction history dito
         cout << "Press any key to continue..."; _getch();
     }
 
     inline void BuyLoad(Session& session) {
         session.RequestScreen(SCREENS::WALLET);
+        Account* account = session.GetActiveAccount();
+        if (!account) {
+            return;
+        }
         int networkChoice, loadChoice, loadAmount;
         string network, mobileNumber;
         char confirm;
@@ -119,8 +125,7 @@ namespace Ev {
                 cout << "Invalid choice. Press any key to continue..."; _getch();
                 return;
         }
-        double balance = Tan::activeAccount == 1 ? Tan::PresetWallet : Tan::RegisteredWallet;
-        if (loadAmount > balance) {
+        if (!account->HasSufficientBalance((float)loadAmount)) {
             cout << "Insufficient balance. Press any key to continue..."; _getch();
             return;
         }
@@ -132,13 +137,12 @@ namespace Ev {
             return;
         }
 
-        if (Tan::activeAccount == 1) Tan::PresetWallet -= loadAmount;
-        else Tan::RegisteredWallet -= loadAmount;
+        account->DeductMoney((float)loadAmount);
         cout << "\n=== LOAD RECEIPT ===\n"
             << "Network: " << network << '\n'
             << "Mobile number: " << mobileNumber << '\n'
             << "Load purchased: PHP " << fixed << setprecision(2) << loadAmount << '\n'
-            << "Remaining balance: PHP " << (Tan::activeAccount == 1 ? Tan::PresetWallet : Tan::RegisteredWallet) << '\n';
+            << "Remaining balance: PHP " << account->GetMoney() << '\n';
         //Transaction history ulet dito
         cout << "Press any key to continue..."; _getch();
     }

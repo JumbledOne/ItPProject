@@ -12,7 +12,7 @@ private:
     // These are private since the setters have extra logic and so you don't change them directly by mistake
     int id = -1;
     std::string phone_number; 
-    int pin = 0;
+    std::string pin; // A string so that it can start with a zero. Empty means no PIN was set
     std::vector<Transaction*> transactions;
     float money = 0;
 
@@ -24,12 +24,17 @@ public:
 
     float GetMoney() const;
     void SetMoney(float new_money);
+    bool HasSufficientBalance(float amount) const;
+    bool AddMoney(float amount);
+    bool DeductMoney(float amount);
 
     bool SetPhoneNumber(std::string new_number); // Return value is whether this succeeded
     std::string GetPhoneNumber() const;
 
-    bool SetPin(int new_pin); // Return value is whether this succeeded. Must have exactly PIN_LENGTH digits
-    int GetPin() const;
+    // A valid PIN is exactly PIN_LENGTH digits. Use this to check input before it gets to the setter
+    static bool IsValidPin(const std::string& pin);
+    bool SetPin(const std::string& new_pin); // Return value is whether this succeeded. Fails if the PIN isn't valid
+    std::string GetPin() const;
 
     // Transactions are tracked here so you can easily iterate over them
     // Called from database which owns account and transaction

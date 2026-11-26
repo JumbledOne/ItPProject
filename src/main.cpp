@@ -5,7 +5,8 @@
 
 void CreateDefaultValues(Session& session) {
     Account& account = session.database->CreateAccount("Juan Dela Cruz", 10000.0f);
-    account.SetPin(4444);
+    account.SetPin("4444");
+    account.SetPhoneNumber("09171234567");
 }
 
 int main() {

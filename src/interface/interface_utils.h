@@ -41,6 +41,17 @@ namespace InterfaceUtils {
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
 
+    // Reads a currency amount. Returns false (and clears the input) if it isn't a number or isn't above zero
+    // Anything past two decimal places is dropped
+    inline bool ReadAmount(float& amount) {
+        if (!(cin >> amount)) {
+            ClearInput();
+            return false;
+        }
+        amount = TruncateCurrency(amount);
+        return isfinite(amount) && amount > 0;
+    }
+
     // Pads with leading zeros and groups the digits, e.g. 42 -> "00000 00042"
     inline string FormatReferenceNumber(int reference_number) {
         string output;

@@ -9,7 +9,7 @@ Account& Database::CreateAccount(const std::string& name, float initial_balance)
     return account;
 }
 
-Transaction& Database::CreateTransaction(Account* from, Account* to, float amount) {
+Transaction& Database::CreateTransaction(Account* from, Account* to, float amount, TRANSACTION_TYPE type) {
     int ref = ++last_transaction_id;
     // Create transaction object
     Transaction& transaction = transactions[ref];
@@ -17,6 +17,7 @@ Transaction& Database::CreateTransaction(Account* from, Account* to, float amoun
     transaction.from = from;
     transaction.to = to;
     transaction.amount = amount;
+    transaction.type = type;
     // Link transaction to accounts
     if (from) {
         from->AddTransaction(transaction);

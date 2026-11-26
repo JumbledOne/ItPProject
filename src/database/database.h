@@ -19,7 +19,7 @@ private:
 public:
     // These below just handle the creation and deletion. Handle it at the caller
     Account& CreateAccount(const std::string& name, float initial_balance);
-    Transaction& CreateTransaction(Account* from, Account* to, float amount); // Either can be null
+    Transaction& CreateTransaction(Account* from, Account* to, float amount, TRANSACTION_TYPE type = TRANSACTION_TYPE::TRANSFER); // Either can be null
 
     void DeleteAccount(int id);
     void DeleteTransaction(int id);

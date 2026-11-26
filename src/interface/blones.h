@@ -18,6 +18,7 @@ namespace Blones {
     inline void ViewTransactions(Session& session) {
         // Check first if the account even exists
         if (!session.GetActiveAccount()) {
+            session.RequestScreen(SCREENS::MAIN); // Otherwise this screen would just repeat forever
             return;
         }
         // Now the actual logic
@@ -84,42 +85,7 @@ namespace Blones {
                     }
                     break;
                 case 3:
-                    session.RequestScreen(SCREENS::VIEW_ACCOUNT_INFO);
-                    return;
-            }
-        }
-    }
-
-    inline void ViewAccountInformation(Session& session) {
-        // Check first if the account even exists
-        if (!session.GetActiveAccount()) {
-            return;
-        }
-        while (true) {
-            InterfaceUtils::ClearScreen();
-            // Display Info
-            cout << "Account: " << session.GetActiveAccount()->name;
-            cout << "\nBalance: " << InterfaceUtils::FloatToPeso(session.GetActiveAccount()->GetMoney());
-            cout << "\n";
-
-            // Input Guide
-            cout << "[1] Change Name";
-            cout << "[2] View Transactions";
-            cout << "[3] Log Out";
-
-            // Handle Input
-            cout << "\n" << InterfaceUtils::OPTION_PROMPT;
-            int input;
-            cin >> input;
-            switch (input) {
-                case 1:
-                    break;
-                case 2:
-                    session.RequestScreen(SCREENS::VIEW_TRANSACTIONS);
-                    return;
-                case 3:
-                    session.LogOut();
-                    session.RequestScreen(SCREENS::MAIN);
+                    session.RequestScreen(SCREENS::WALLET);
                     return;
             }
         }

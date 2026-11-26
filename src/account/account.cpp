@@ -1,4 +1,6 @@
 #include <account.h>
+#include <cmath>
+#include <limits>
 
 #include <algorithm>
 
@@ -33,21 +35,19 @@ std::string Account::GetPhoneNumber() const {
     return phone_number;
 }
 
-bool Account::SetPin(int new_pin) {
-    // PIN_LENGTH digits means 1000 to 9999 when it's 4
-    int min_pin = 1;
-    for (int i = 1; i < PIN_LENGTH; i++) {
-        min_pin *= 10;
-    }
-    int max_pin = min_pin * 10 - 1;
-    if (new_pin < min_pin || new_pin > max_pin) {
+bool Account::IsValidPin(const std::string& pin) {
+    return pin.size() == PIN_LENGTH && pin.find_first_not_of("0123456789") == std::string::npos;
+}
+
+bool Account::SetPin(const std::string& new_pin) {
+    if (!IsValidPin(new_pin)) {
         return false;
     }
     pin = new_pin;
     return true;
 }
 
-int Account::GetPin() const {
+std::string Account::GetPin() const {
     return pin;
 }
 
@@ -68,4 +68,18 @@ void Account::DeleteTransaction(int reference_number) {
         }
         i++;
     }
+}
+bool Account::HasSufficientBalance(float amount) const {
+    return std::isfinite(amount) && amount > 0 && std::isfinite(money) && money >= amount;
+}
+bool Account::AddMoney(float amount) {
+    if (!std::isfinite(amount) || amount <= 0 || !std::isfinite(money) ||
+        amount > std::numeric_limits<float>::max() - money) return false;
+    money += amount;
+    return true;
+}
+bool Account::DeductMoney(float amount) {
+    if (!HasSufficientBalance(amount)) return false;
+    money -= amount;
+    return true;
 }
