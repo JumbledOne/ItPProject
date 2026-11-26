@@ -4,7 +4,7 @@ int opt, walletOpt, PIN, attempt, activeAccount;
 long long accountNum, accNum, pw;
 double cash, RegisteredWallet, PresetWallet=5000;
 
-optional<int> DisplayMainScreen(){
+optional<int> DisplayMainScreen(Session& session){
 	do {
 	system("cls");
 	cout << "Welcome to ePESO!\n\n";
@@ -19,7 +19,7 @@ optional<int> DisplayMainScreen(){
 			break;
 		case 2:
 			RegisteredWallet=0;
-			Register();
+			session.screen = SCREENS::REGISTRATION;
 			break;
 		case 3: 
 			cout << "Exiting program...";
@@ -33,7 +33,7 @@ optional<int> DisplayMainScreen(){
 	} while(opt!= 3);
 	return 0;
 }
-void Register(){
+optional<int> Register(Session& session){
 	system("cls");
 	cout << "Welcome to ePESO!\n[CREATING ACCOUNT]\n\n";
 	cout << "Enter account number (10 Digits): ";
