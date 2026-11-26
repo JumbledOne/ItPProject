@@ -12,7 +12,7 @@ public:
     Session();
 
     std::unique_ptr<Database> database;
-    int account = 0; // Uses the account id so that it doesn't need to know about the account class
+    int account = -1; // Uses the account id so that it doesn't need to know about the account class
     SCREENS screen = SCREENS::MAIN;
     std::optional<int> exit_code = std::nullopt;
 
