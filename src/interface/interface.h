@@ -1,14 +1,31 @@
 #pragma once
 
+#include <unordered_map>
 #include <optional>
+#include <functional>
 
+#include <screens.h>
+#include <session.h>
 #include <tan.h>
 
-// # Screens
-// Login
-// Register
-// ?
-
 namespace Interface {
-    std::optional<int> DisplayScreen();
+    inline const std::unordered_map<SCREENS, std::function<void(Session&)>> SCREEN_TO_FUNCTION = {
+        {SCREENS::MAIN, DisplayMainScreen},
+        {SCREENS::REGISTRATION, Register},
+        {SCREENS::LOGIN, Login},
+        {SCREENS::CASH_IN, CashIn},
+        {SCREENS::CASH_OUT, CashOut}
+    };
+
+    // The main function that runs the interface on a loop
+    // Runs until session.RequestExit() then main reads session.exit_code
+    inline void ShowInterface(Session& session) {
+        while (!session.exit_code) {
+            SCREEN_TO_FUNCTION.at(session.screen)(session);
+        }
+    }
+
+    //-------------------------------//
+    // Concrete screens below
+    
 }

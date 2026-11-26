@@ -7,10 +7,12 @@
 #include <conio.h>
 #include <optional>
 
+#include <session.h>
+
 using namespace std;
 
-optional<int> DisplayMainScreen();
-void Login();
-void Register();
-void CashIn();
-void CashOut();
+void DisplayMainScreen(Session& session);
+void Login(Session& session);
+void Register(Session& session);
+void CashIn(Session& session);
+void CashOut(Session& session);

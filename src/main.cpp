@@ -1,35 +1,16 @@
-#include <iostream>
-#include <memory>
-#include <optional>
-
-#include <tan.h>
-#include <user.h>
+#include <session.h>
 #include <persistence.h>
 #include <database.h>
-
-using namespace std;
-
-// Global vars
-std::unique_ptr<User> user;
-std::unique_ptr<Database> database;
-
-void LoadOrInitialize() {
-    user = std::make_unique<User>();
-    database = std::make_unique<Database>(); // Create database class. Empty but it'll be filled on load
-    Persistence::Load(*database);
-}
-
+#include <interface.h>
 
 int main() {
-    LoadOrInitialize();
+    std::unique_ptr<Session> session = std::make_unique<Session>(); // Owns the database. Everything else reaches it through session.database
+    Persistence::Load(*session);
 
     // Display Screen
-    std::optional<int> interface_result = std::nullopt;
-    while (!(interface_result)) { // Waits until the interface result returns something
-       interface_result = DisplayMainScreen(); 
-    }
+    Interface::ShowInterface(*session); // Returns once a screen requests an exit
 
     // Exit
-    Persistence::Save(*database);
-    return interface_result.value_or(0); // Returns whatever the interface code did. Defaults to zero
+    Persistence::Save(*session);
+    return session->exit_code.value_or(0); // Returns whatever the interface code did. Defaults to zero
 }
