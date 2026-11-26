@@ -29,14 +29,6 @@ Account& Database::GetAccount(int id) {
     return accounts.at(id);
 }
 
-const Account& Database::GetAccount(int id) const {
-    return accounts.at(id);
-}
-
 Transaction& Database::GetTransaction(int id) {
-    return transactions.at(id);
-}
-
-const Transaction& Database::GetTransaction(int id) const {
     return transactions.at(id);
 }

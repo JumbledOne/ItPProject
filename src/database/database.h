@@ -24,9 +24,6 @@ public:
     void DeleteAccount(int id);
     void DeleteTransaction(int id);
 
-    // Throw std::out_of_range if the id doesn't exist
     Account& GetAccount(int id);
-    const Account& GetAccount(int id) const;
     Transaction& GetTransaction(int id);
-    const Transaction& GetTransaction(int id) const;
 };
