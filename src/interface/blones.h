@@ -1,7 +1,9 @@
 #pragma once
 
+#include <cmath>
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include <session.h>
 #include <transaction.h>
@@ -17,28 +19,34 @@ namespace Blones {
         if (!session.active_account) {
             return;
         }
-        system("cls"); // Clear screen first
-
         // Now the actual logic
-        Transaction* transaction;
         const std::vector<Transaction*>& transaction_list = session.active_account->GetTransactions();
-
-        // Page logic
         int page = 0;
         int page_count = (int)(ceil((float)transaction_list.size() / (float)TRANSACTIONS_PER_PAGE));
+        if (page_count == 0) {
+            page_count = 1; // Always at least one page
+        }
 
         while (true) {
+            system("cls");
             // Display transactions
             for (int i = 0; i < TRANSACTIONS_PER_PAGE; i++) {
-                // Get transaction
-                transaction = transaction_list[(page * TRANSACTIONS_PER_PAGE) + i];
+                // Check first if the index goes beyond the list size
+                // If so break so that the last page doesn't contain all transactions
+                int index = (page * TRANSACTIONS_PER_PAGE) + i;
+                if (index >= (int)transaction_list.size()) {
+                    break;
+                }
+                const Transaction* transaction = transaction_list[index];
+
                 // Display type specific info
+                // First line acts as a header and intentionally doesn't contain a line break
                 switch (transaction->type) {
                     case TRANSACTION_TYPE::TRANSFER:
                         cout << "Transfer";
                         if (transaction->from && transaction->to) {
                             cout << "\nFrom: " << transaction->from->name;
-                            cout << "\nTo: " << transaction->from->name;
+                            cout << "\nTo: " << transaction->to->name;
                         }
                         break;
                     case TRANSACTION_TYPE::CASH_IN:
@@ -54,7 +62,7 @@ namespace Blones {
             }
             
             // Display page control
-            cout << "\n[" << page << " / " << page_count << "]";
+            cout << "\n[" << (page + 1) << " / " << page_count << "]";
             cout << "\n[1] Previous Page";
             cout << "\n[2] Next Page";
             cout << "\n[3] Return";
@@ -69,13 +77,12 @@ namespace Blones {
                     }
                     break;
                 case 2:
-                    if (page < page_count) {
+                    if (page < page_count - 1) {
                         page++;
                     }
                     break;
                 case 3:
                     return;
-                    break;
             }
         }
     }
@@ -85,7 +92,30 @@ namespace Blones {
         if (!session.active_account) {
             return;
         }
-        system("cls"); // Clear screen first
-        
+        while (true) {
+            system("cls");
+            // Display Info
+            cout << "Account: " << session.active_account->name;
+            cout << "\nBalance: " << session.active_account->GetMoney();
+            cout << "\n";
+
+            // Input Guide
+            cout << "[1] Change Name";
+            cout << "[2] View Transactions";
+            cout << "[3] Return To Menu";
+
+            // Handle Input
+            int input;
+            cin >> input;
+            switch (input) {
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    
+                    break;
+            }
+        }
     }
 }
