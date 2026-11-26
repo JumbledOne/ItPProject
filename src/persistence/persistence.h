@@ -16,12 +16,11 @@ namespace Persistence {
     struct AccountProxy {
         int id;
         int name;
-    }
+    };
 
     struct TransactionProxy {
         int id;
-        int 
-    }
+    };
 
     // Saves the database to disk
     // Return value is whether it succeeded
