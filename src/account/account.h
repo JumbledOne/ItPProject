@@ -13,7 +13,7 @@ private:
     int id = -1;
     std::string phone_number; 
     std::string pin;
-    std::vector<Transaction> transactions;
+    std::vector<Transaction*> transactions;
     float money = 0;
 
 public:
@@ -29,4 +29,10 @@ public:
 
     bool SetPin(std::string new_pin); // Return value is whether this succeeded
     std::string GetPin() const;
+
+    // Transactions are tracked here so you can easily iterate over them
+    // Called from database which owns account and transaction
+    const std::vector<Transaction*>& GetTransactions() const;
+    void AddTransaction(Transaction& transaction);
+    void DeleteTransaction(int reference_number);
 };

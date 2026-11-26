@@ -11,7 +11,7 @@ int main() {
     std::unique_ptr<Session> session = std::make_unique<Session>(); // Owns the database. Everything else reaches it through session.database
     bool load_result = Persistence::Load(*session);
     if (!load_result) {
-        CreateDefaultValues(session);
+        CreateDefaultValues(*session);
     }
 
     // Display Screen

@@ -9,11 +9,20 @@ Account& Database::CreateAccount() {
 
 Transaction& Database::CreateTransaction(int from, int to, float amount) {
     int ref = ++last_transaction_id;
+    // Create transaction object
     Transaction& transaction = transactions[ref];
     transaction.reference_number = ref;
     transaction.from = from;
     transaction.to = to;
     transaction.amount = amount;
+    // Link transaction to accounts
+    if (HasAccount(from)) {
+        GetAccount(from).AddTransaction(transaction);
+    }
+    if (to != from && HasAccount(to)) { // Don't link it twice if it's the same account
+        GetAccount(to).AddTransaction(transaction);
+    }
+
     return transaction;
 }
 
@@ -23,6 +32,16 @@ void Database::DeleteAccount(int id) {
 }
 
 void Database::DeleteTransaction(int id) {
+    if (!HasTransaction(id)) {
+        return;
+    }
+    const Transaction& transaction = transactions.at(id);
+    if (HasAccount(transaction.from)) {
+        GetAccount(transaction.from).DeleteTransaction(id);
+    }
+    if (HasAccount(transaction.to)) {
+        GetAccount(transaction.to).DeleteTransaction(id);
+    }
     transactions.erase(id);
 }
 

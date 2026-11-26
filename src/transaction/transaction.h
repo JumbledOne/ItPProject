@@ -1,9 +1,16 @@
 #pragma once
 
+enum class TRANSACTION_TYPE {
+    TRANSFER,
+    CASH_IN,
+    CASH_OUT
+};
+
 struct Transaction {
     // We use account ids to avoid circular includes between this and account
     int reference_number;
     int from = -1; 
     int to = -1;
     float amount;
+    TRANSACTION_TYPE type = TRANSACTION_TYPE::TRANSFER;
 };

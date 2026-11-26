@@ -9,8 +9,7 @@ namespace Blones {
 
     void ViewTransactions(Session& session) {
         // Check first if the account even exists
-        Account* account = session.active_account;
-        if (!account) {
+        if (!session.active_account) {
             return;
         }
         system("cls"); // Clear screen first
@@ -19,8 +18,7 @@ namespace Blones {
 
     void ViewAccountInformation(Session& session) {
         // Check first if the account even exists
-        Account* account = session.active_account;
-        if (!account) {
+        if (!session.active_account) {
             return;
         }
         system("cls"); // Clear screen first

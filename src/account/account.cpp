@@ -1,5 +1,7 @@
 #include <account.h>
 
+#include <algorithm>
+
 // Can only be called once
 void Account::SetId(int new_id) {
     if (id == -1) {
@@ -37,4 +39,23 @@ bool Account::SetPin(std::string new_pin) {
 
 std::string Account::GetPin() const {
     return pin;
+}
+
+const std::vector<Transaction*>& Account::GetTransactions() const {
+    return transactions;
+}
+
+void Account::AddTransaction(Transaction& transaction) {
+    transactions.push_back(&transaction);
+}
+
+void Account::DeleteTransaction(int reference_number) {
+    int i = 0;
+    for (Transaction* transaction : transactions) {
+        if (transaction->reference_number == reference_number) {
+            transactions.erase(transactions.begin() + i);
+            break;
+        }
+        i++;
+    }
 }
