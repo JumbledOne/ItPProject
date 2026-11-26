@@ -12,7 +12,7 @@ private:
     // These are private since the setters have extra logic and so you don't change them directly by mistake
     int id = -1;
     std::string phone_number; 
-    std::string pin;
+    int pin = 0;
     std::vector<Transaction*> transactions;
     float money = 0;
 
@@ -23,12 +23,13 @@ public:
     int GetId() const;
 
     float GetMoney() const;
+    void SetMoney(float new_money);
 
     bool SetPhoneNumber(std::string new_number); // Return value is whether this succeeded
     std::string GetPhoneNumber() const;
 
-    bool SetPin(std::string new_pin); // Return value is whether this succeeded
-    std::string GetPin() const;
+    bool SetPin(int new_pin); // Return value is whether this succeeded. Must have exactly PIN_LENGTH digits
+    int GetPin() const;
 
     // Transactions are tracked here so you can easily iterate over them
     // Called from database which owns account and transaction

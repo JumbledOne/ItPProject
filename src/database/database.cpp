@@ -1,9 +1,11 @@
 #include <database.h>
 
-Account& Database::CreateAccount() {
+Account& Database::CreateAccount(const std::string& name, float initial_balance) {
     int id = ++last_account_id; // Increment first so the first account gets id 0
     Account& account = accounts[id]; // Apparently this constructs it automatically
     account.SetId(id);
+    account.name = name;
+    account.SetMoney(initial_balance);
     return account;
 }
 

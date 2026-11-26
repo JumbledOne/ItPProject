@@ -17,6 +17,10 @@ float Account::GetMoney() const {
     return money;
 }
 
+void Account::SetMoney(float new_money) {
+    money = new_money;
+}
+
 bool Account::SetPhoneNumber(std::string new_number){
     if (new_number.size() != PHONE_NUMBER_LENGTH) {
         return false;
@@ -29,15 +33,21 @@ std::string Account::GetPhoneNumber() const {
     return phone_number;
 }
 
-bool Account::SetPin(std::string new_pin) {
-    if (new_pin.size() != PIN_LENGTH) {
+bool Account::SetPin(int new_pin) {
+    // PIN_LENGTH digits means 1000 to 9999 when it's 4
+    int min_pin = 1;
+    for (int i = 1; i < PIN_LENGTH; i++) {
+        min_pin *= 10;
+    }
+    int max_pin = min_pin * 10 - 1;
+    if (new_pin < min_pin || new_pin > max_pin) {
         return false;
     }
     pin = new_pin;
     return true;
 }
 
-std::string Account::GetPin() const {
+int Account::GetPin() const {
     return pin;
 }
 

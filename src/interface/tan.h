@@ -7,18 +7,20 @@
 #include <optional>
 
 #include <session.h>
+#include <interface_utils.h>
 
 namespace Tan {
     using namespace std;
 
-    inline int opt, walletOpt, PIN, attempt, activeAccount;
-    inline long long accountNum, accNum, pw;
-    inline double cash, RegisteredWallet, PresetWallet = 5000;
+    // These stay global because they are shared between screens (and Ev.h reads them)
+    inline int activeAccount;
+    inline double RegisteredWallet, PresetWallet = 5000;
 
     inline void DisplayMainScreen(Session& session) {
         system("cls");
         cout << "Welcome to ePESO!\n\n";
         cout << "[1] Log In\n[2] Register\n[3] Exit\nChoose option: ";
+        int opt;
         cin >> opt;
         switch (opt) {
             case 1: session.RequestScreen(SCREENS::LOGIN); break;
@@ -40,14 +42,26 @@ namespace Tan {
     inline void Register(Session& session) {
         system("cls");
         cout << "Welcome to ePESO!\n[CREATING ACCOUNT]\n\n";
+        long long accountNum, accNum, pw;
+        int PIN, attempt;
+
+        // Account Number input
         cout << "Enter account number (10 Digits): ";
         cin >> accountNum;
-        if (accountNum < 999999999) {
+        if (to_string(accountNum).size() > InterfaceUtils::REFERENCE_NUMBER_LENGTH) {
             cout << "Invalid account number. Press any key to try again.";
             _getch();
             session.RequestScreen(SCREENS::MAIN);
             return;
         }
+        if (session.database->HasAccount(accountNum)) {
+            cout << "Account already exists. Press any key to try again.";
+            _getch();
+            session.RequestScreen(SCREENS::MAIN);
+            return;
+        }
+
+        // Pin Inputs
         cout << "Enter a 4-DIGIT PIN: ";
         cin >> PIN;
         if (PIN < 999) {
@@ -56,6 +70,8 @@ namespace Tan {
             session.RequestScreen(SCREENS::MAIN);
             return;
         }
+
+        // Pin confirmation
         cout << "Confirm PIN: ";
         cin >> pw;
         if (pw != PIN) {
@@ -94,18 +110,40 @@ namespace Tan {
     }
 
     inline void Login(Session& session) {
-        system("cls");
-        cout << "Welcome to ePESO!\nLogging In...\n\nEnter account number: ";
-        cin >> accountNum;
-        if (accountNum == 9215213192) {
-            attempt = 3;
+        InterfaceUtils::ClearScreen();
+
+        // Check first if there are any accounts
+        const auto& account_list = session.database->GetAccounts();
+        if (account_list.empty()) {
+            cout << "No accounts registered. Press any key to continue...";
+            _getch();
+            session.RequestScreen(SCREENS::MAIN);
+            return;
+        }
+
+        cout << "Welcome to ePESO!\nLogging In...\n\n";
+        cout << "Accounts:\n";
+        for (const auto& [id, listed_account] : account_list) {
+            cout << "\t" << InterfaceUtils::FormatReferenceNumber(id) << " - " << listed_account.name << "\n";
+        }
+
+        // Listen for Input
+        cout << "\nEnter account number: ";
+        int account_num_input;
+        cin >> account_num_input;
+        // Check if the account inputted exists
+        if (session.database->HasAccount(account_num_input)) {
+            Account& account = session.database->GetAccount(account_num_input);
+            int attempt = 3;
+            int pin_input;
             do {
                 cout << "Enter PIN: ";
-                cin >> PIN;
-                if (PIN == 4444) {
+                cin >> pin_input;
+                if (pin_input == account.GetPin()) {
                     cout << "Access Granted. Enter any key to continue...";
                     _getch();
                     activeAccount = 1;
+                    session.active_account = &account;
                     session.RequestScreen(SCREENS::WALLET);
                     return;
                 }
@@ -126,8 +164,8 @@ namespace Tan {
         InterfaceUtils::ClearScreen();
 
         // Display account info
-        cout << "Account: " << session.active_account->name;
         cout << "Welcome to ePESO!\n";
+        cout << "\nName: " << session.active_account->name;
         cout << "\nWallet Amount: PHP " << fixed << setprecision(2)
              << (activeAccount == 1 ? PresetWallet : RegisteredWallet);
 
@@ -141,6 +179,7 @@ namespace Tan {
         cout << "\n" << InterfaceUtils::OPTION_PROMPT;
 
         // Input
+        int walletOpt;
         cin >> walletOpt;
         switch (walletOpt) {
             case 1: session.RequestScreen(SCREENS::CASH_IN); break;
@@ -165,6 +204,7 @@ namespace Tan {
         else
             cout << "Wallet Amount: PHP " << fixed << setprecision(2) << RegisteredWallet;
         cout << "\nEnter amount to cash in: ";
+        double cash;
         cin >> cash;
         if (cash <= 50000 && cash > 0) {
             cout << "Press any key to confirm cash in...";
@@ -186,6 +226,7 @@ namespace Tan {
         else
             cout << "Wallet Amount: PHP " << fixed << setprecision(2) << RegisteredWallet;
         cout << "\nEnter amount to cash out: ";
+        double cash;
         cin >> cash;
         double balance = activeAccount == 1 ? PresetWallet : RegisteredWallet;
         if (cash > 0 && cash <= balance) {

@@ -4,7 +4,8 @@
 #include <interface.h>
 
 void CreateDefaultValues(Session& session) {
-    //session.database->CreateAccount();
+    Account& account = session.database->CreateAccount("Juan Dela Cruz", 10000.0f);
+    account.SetPin(4444);
 }
 
 int main() {

@@ -24,7 +24,7 @@ namespace InterfaceUtils {
     // Use for displaying currency values
     inline string FloatToPeso(float value) {
         ostringstream output;
-        output << "P " << fixed << setprecision(2) << TruncateCurrency(value);
+        output << "PHP " << fixed << setprecision(2) << TruncateCurrency(value);
         return output.str();
     }
 
