@@ -22,7 +22,7 @@ namespace Gabua {
         cout << "Available balance: " << InterfaceUtils::FloatToPeso(sender->GetMoney());
         cout << "\nRecipient mobile number: ";
         string phone;
-        cin >> phone;
+        InterfaceUtils::ReadValue(phone);
         int recipient_id = Tan::FindPhone(session, phone);
         if (recipient_id < 0 || recipient_id == sender->GetId()) {
             cout << "Recipient not found or self-transfer.";
@@ -39,7 +39,7 @@ namespace Gabua {
         }
         char confirm;
         cout << "Confirm transfer? (Y/N): ";
-        cin >> confirm;
+        InterfaceUtils::ReadValue(confirm);
         if (confirm != 'Y' && confirm != 'y') {
             cout << "Cancelled.\n";
             Tan::Pause();

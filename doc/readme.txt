@@ -5,9 +5,12 @@
 
 # Potential issues
 * Only fully works on Windows since _getch and system("cls") might not work for other operating systems.
-* Since there are only 8 digits in a reference number, the transaction and account id can go beyond this after 100 000 000 accounts or transactions. But the number is so high that this shouldn't be an issue
+* Since there are only 8 digits in a reference number, the transaction and account id can go beyond this after 100 000 000 accounts or transactions. But the number is so high that this shouldn't be an issue. A save with an id above 99 999 999 is treated as corrupted and that account or transaction is skipped
 * The program doesn't save if you close the terminal externally instead of through the interface
-* Saving could get corrupted if the program exits while saving or the power goes out?
+* Saving writes to e_peso.txt.tmp and then replaces e_peso.txt, so the old save is kept if the program exits while saving or the power goes out
+* The program saves and exits if the input ends (Ctrl+Z)
+* A save without any accounts counts as no save, so the default account is made
+* Money is stored as a float, save loading is known to cause the cent values to drift due to precision errors.
 
 # Notes
-* Account names can be anything for now
+* Account names can be anything except empty

@@ -36,7 +36,7 @@ namespace Parser {
 
     void AccountProxy::Realize(Session& session) {
         // CreateAccount needs the account number to restore and a name
-        if (id < 0 || name.empty()) {
+        if (id < 0 || id > MAX_ID || name.empty()) {
             return;
         }
         // The rest is optional. A corrupted value falls back to a default instead of cancelling
@@ -49,9 +49,15 @@ namespace Parser {
 
     void AccountProxy::ApplyBalance(Session& session) const {
         // Looked up by id instead of keeping a pointer since a later account with the same id replaces this one
-        // A corrupted balance is left alone so the account keeps what the transactions gave it
-        if (realized && std::isfinite(money) && money >= 0 && session.database->HasAccount(id)) {
-            session.database->GetAccount(id).SetMoney(money);
+        if (!realized || !session.database->HasAccount(id)) {
+            return;
+        }
+        Account& account = session.database->GetAccount(id);
+        if (std::isfinite(money) && money >= 0) {
+            account.SetMoney(money);
+        } else if (account.GetMoney() < 0) {
+            // A corrupted balance keeps what the transactions gave the account, but it can't be below zero
+            account.SetMoney(0);
         }
     }
 
@@ -76,7 +82,7 @@ namespace Parser {
 
     void TransactionProxy::Realize(Session& session) {
         // CreateTransaction needs the reference number to restore and the amount
-        if (id < 0 || !std::isfinite(amount) || amount <= 0) {
+        if (id < 0 || id > MAX_ID || !std::isfinite(amount) || amount <= 0) {
             return;
         }
         // An account that doesn't exist is the same as there being none

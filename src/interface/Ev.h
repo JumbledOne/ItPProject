@@ -32,8 +32,7 @@ namespace Ev {
         cout << "Welcome to ePESO!\n[BILLS PAYMENT]\n\n";
         cout << "Wallet Amount: " << InterfaceUtils::FloatToPeso(account->GetMoney()) << "\n\n";
         cout << "[1] Electricity\n[2] Water\n[3] Internet\nChoose a biller: ";
-        if (!(cin >> billerChoice)) {
-            InterfaceUtils::ClearInput();
+        if (!InterfaceUtils::ReadValue(billerChoice)) {
             Fail("Invalid choice.");
             return;
         }
@@ -46,7 +45,7 @@ namespace Ev {
                 return;
         }
         cout << "Enter billing number: ";
-        cin >> billingNumber;
+        InterfaceUtils::ReadValue(billingNumber);
         cout << "Enter payment amount: ";
         if (!InterfaceUtils::ReadAmount(amount)) {
             Fail("Invalid amount.");
@@ -57,7 +56,7 @@ namespace Ev {
             return;
         }
         cout << "Pay " << InterfaceUtils::FloatToPeso(amount) << " to " << biller << "? (Y/N): ";
-        cin >> confirm;
+        InterfaceUtils::ReadValue(confirm);
         if (confirm != 'Y' && confirm != 'y') {
             Fail("Payment cancelled.");
             return;
@@ -90,8 +89,7 @@ namespace Ev {
         cout << "Welcome to ePESO!\n[BUY MOBILE LOAD]\n\n";
         cout << "Wallet Amount: " << InterfaceUtils::FloatToPeso(account->GetMoney()) << "\n\n";
         cout << "[1] Globe\n[2] Smart\n[3] DITO\nChoose a network: ";
-        if (!(cin >> networkChoice)) {
-            InterfaceUtils::ClearInput();
+        if (!InterfaceUtils::ReadValue(networkChoice)) {
             Fail("Invalid choice.");
             return;
         }
@@ -104,14 +102,13 @@ namespace Ev {
                 return;
         }
         cout << "Enter recipient mobile number: ";
-        cin >> mobileNumber;
+        InterfaceUtils::ReadValue(mobileNumber);
         if (!Tan::IsValidPhoneNumber(mobileNumber)) {
             Fail("Enter an 11-digit mobile number starting with 09.");
             return;
         }
         cout << "[1] PHP 50\n[2] PHP 100\n[3] PHP 200\nChoose load amount: ";
-        if (!(cin >> loadChoice)) {
-            InterfaceUtils::ClearInput();
+        if (!InterfaceUtils::ReadValue(loadChoice)) {
             Fail("Invalid choice.");
             return;
         }
@@ -129,7 +126,7 @@ namespace Ev {
         }
         cout << "Buy " << InterfaceUtils::FloatToPeso(loadAmount) << ' ' << network << " load for "
             << mobileNumber << "? (Y/N): ";
-        cin >> confirm;
+        InterfaceUtils::ReadValue(confirm);
         if (confirm != 'Y' && confirm != 'y') {
             Fail("Purchase cancelled.");
             return;

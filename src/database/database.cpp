@@ -3,7 +3,7 @@
 // NOTE: Forcing an id that is in use deletes that account. If it's the active account call Session::LogOut() first
 Account& Database::CreateAccount(const std::string& name, float initial_balance, int force_id) {
     int id;
-    if (force_id >= 0) {
+    if (force_id >= 0 && force_id <= MAX_ID) {
         DeleteAccount(force_id); // Does nothing if there is no such account
         id = force_id;
         if (id > last_account_id) {
@@ -21,7 +21,7 @@ Account& Database::CreateAccount(const std::string& name, float initial_balance,
 
 Transaction& Database::CreateTransaction(Account* from, Account* to, float amount, TRANSACTION_TYPE type, int force_id) {
     int ref;
-    if (force_id >= 0) {
+    if (force_id >= 0 && force_id <= MAX_ID) {
         DeleteTransaction(force_id); // Does nothing if there is no such transaction
         ref = force_id;
         if (ref > last_transaction_id) {
@@ -55,9 +55,17 @@ void Database::DeleteAccount(int id) {
     }
     // Transactions point to accounts so clear those before the account is gone
     Account* account = &accounts.at(id);
-    for (auto& [ref, transaction] : transactions) {
+    for (auto it = transactions.begin(); it != transactions.end();) {
+        Transaction& transaction = it->second;
+        bool was_linked = transaction.from == account || transaction.to == account;
         if (transaction.from == account) transaction.from = nullptr;
         if (transaction.to == account) transaction.to = nullptr;
+        // No account can show a transaction that lost its last account, so it is deleted too
+        if (was_linked && !transaction.from && !transaction.to) {
+            it = transactions.erase(it);
+        } else {
+            ++it;
+        }
     }
     accounts.erase(id);
 }
@@ -110,13 +118,13 @@ int Database::GetLastTransactionId() const {
 }
 
 void Database::SetLastAccountId(int id) {
-    if (id > last_account_id) {
+    if (id > last_account_id && id <= MAX_ID) {
         last_account_id = id;
     }
 }
 
 void Database::SetLastTransactionId(int id) {
-    if (id > last_transaction_id) {
+    if (id > last_transaction_id && id <= MAX_ID) {
         last_transaction_id = id;
     }
 }

@@ -20,6 +20,8 @@ int main() {
     Interface::ShowInterface(*session); // Returns once a screen requests an exit
 
     // Exit
-    Persistence::Save(*session);
+    if (!Persistence::Save(*session)) {
+        std::cerr << "Couldn't save the data to " << FILE_NAME << "\n";
+    }
     return session->exit_code.value_or(0); // Returns whatever the interface code did. Defaults to zero
 }

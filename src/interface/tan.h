@@ -38,8 +38,7 @@ namespace Tan {
         cout << "Welcome to ePESO!\n\n";
         cout << "[1] Log In\n[2] Register\n[3] Exit\n" << InterfaceUtils::OPTION_PROMPT;
         int opt;
-        if (!(cin >> opt)) {
-            InterfaceUtils::ClearInput();
+        if (!InterfaceUtils::ReadValue(opt)) {
             opt = 0; // Goes to the invalid option case
         }
         switch (opt) {
@@ -61,17 +60,23 @@ namespace Tan {
         cout << "Welcome to ePESO!\n[CREATING ACCOUNT]\n\n";
         string PIN, confirm_PIN;
 
-        // Name input
+        // Name input. It can be anything except empty since an account without a name can't be loaded back
         string name_input;
-        cout << "Enter your name: ";
-        InterfaceUtils::ClearInput(); // Drop the Enter left over from the menu choice
-        getline(cin, name_input);
+        while (true) {
+            cout << "Enter your name: ";
+            InterfaceUtils::ReadLine(name_input);
+            if (!name_input.empty()) {
+                break;
+            }
+            cout << "The name can't be empty. Press any key to try again.\n";
+            InterfaceUtils::AwaitInput();
+        }
 
         // Mobile number input
         string phone;
         while (true) {
             cout << "Enter your mobile number (" << PHONE_NUMBER_LENGTH << " digits, starts with 09): ";
-            cin >> phone;
+            InterfaceUtils::ReadValue(phone);
             if (!IsValidPhoneNumber(phone)) {
                 cout << "Invalid mobile number. Press any key to try again.\n";
                 InterfaceUtils::AwaitInput();
@@ -88,9 +93,8 @@ namespace Tan {
         // Pin Inputs
         while (true) {
             cout << "Enter a " << PIN_LENGTH << "-DIGIT PIN: ";
-            cin >> PIN;
+            InterfaceUtils::ReadValue(PIN);
             if (!Account::IsValidPin(PIN)) {
-                InterfaceUtils::ClearInput(); // Throw away bad input
                 cout << "Invalid PIN. Press any key to try again.\n";
                 InterfaceUtils::AwaitInput();
                 continue;
@@ -101,9 +105,8 @@ namespace Tan {
         // Pin confirmation
         while (true) {
             cout << "Confirm PIN: ";
-            cin >> confirm_PIN;
-            if (cin.fail() || confirm_PIN != PIN) {
-                InterfaceUtils::ClearInput();
+            bool was_read = InterfaceUtils::ReadValue(confirm_PIN);
+            if (!was_read || confirm_PIN != PIN) {
                 cout << "PIN does not match. Press any key to try again.\n";
                 InterfaceUtils::AwaitInput();
                 continue;
@@ -144,11 +147,7 @@ namespace Tan {
 
         // Listen for Input
         cout << "\nEnter account number: ";
-        int account_num_input;
-        if (!(cin >> account_num_input)) {
-            InterfaceUtils::ClearInput();
-            account_num_input = -1; // Can't match an account
-        }
+        int account_num_input = InterfaceUtils::ReadAccountNumber(); // Takes it as the list shows it too, "00000 00001". -1 can't match an account
         // Check if the account inputted exists
         if (session.database->HasAccount(account_num_input)) {
             Account& account = session.database->GetAccount(account_num_input);
@@ -156,8 +155,7 @@ namespace Tan {
             string pin_input;
             do {
                 cout << "Enter PIN: ";
-                cin >> pin_input;
-                InterfaceUtils::ClearInput(); // Drop anything extra on the line
+                InterfaceUtils::ReadValue(pin_input);
                 if (Account::IsValidPin(pin_input) && pin_input == account.GetPin()) {
                     cout << "Access Granted. Enter any key to continue...";
                     InterfaceUtils::AwaitInput();
@@ -204,13 +202,14 @@ namespace Tan {
         cout << "\n[5] Pay Bills";
         cout << "\n[6] Buy Load";
         cout << "\n[7] View Transactions";
-        cout << "\n[8] Log Out";
+        cout << "\n[8] Change Name";
+        cout << "\n[9] Change PIN";
+        cout << "\n[10] Log Out";
         cout << "\n" << InterfaceUtils::OPTION_PROMPT;
 
         // Input
         int walletOpt;
-        if (!(cin >> walletOpt)) {
-            InterfaceUtils::ClearInput();
+        if (!InterfaceUtils::ReadValue(walletOpt)) {
             walletOpt = 0; // Goes to the invalid option case
         }
         switch (walletOpt) {
@@ -224,7 +223,9 @@ namespace Tan {
             case 5: session.RequestScreen(SCREENS::PAY_BILLS); break;
             case 6: session.RequestScreen(SCREENS::BUY_LOAD); break;
             case 7: session.RequestScreen(SCREENS::VIEW_TRANSACTIONS); break;
-            case 8:
+            case 8: session.RequestScreen(SCREENS::CHANGE_NAME); break;
+            case 9: session.RequestScreen(SCREENS::CHANGE_PIN); break;
+            case 10:
                 session.LogOut();
                 session.RequestScreen(SCREENS::MAIN);
                 break;
@@ -253,7 +254,7 @@ namespace Tan {
         }
         char confirm;
         cout << "Confirm? (Y/N): ";
-        cin >> confirm;
+        InterfaceUtils::ReadValue(confirm);
         if (confirm == 'Y' || confirm == 'y') {
             // Creating the transaction is what adds the money
             session.database->CreateTransaction(nullptr, account, amount, TRANSACTION_TYPE::CASH_IN);
@@ -282,7 +283,7 @@ namespace Tan {
         }
         char confirm;
         cout << "Confirm? (Y/N): ";
-        cin >> confirm;
+        InterfaceUtils::ReadValue(confirm);
         if (confirm == 'Y' || confirm == 'y') {
             // Creating the transaction is what takes the money out. The balance was already checked above
             session.database->CreateTransaction(account, nullptr, amount, TRANSACTION_TYPE::CASH_OUT);
