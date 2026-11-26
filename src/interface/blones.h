@@ -121,9 +121,8 @@ namespace Blones {
         }
 
         InterfaceUtils::ClearScreen();
-        cout << "[CHANGE NAME]\n\n";
         cout << "Current name: " << account->name << "\n";
-        cout << "Enter your new name (leave it empty to go back): ";
+        cout << "Enter your new name (leave empty to go back): ";
         string new_name;
         InterfaceUtils::ReadLine(new_name);
         if (new_name.empty()) {
@@ -145,8 +144,7 @@ namespace Blones {
         }
 
         InterfaceUtils::ClearScreen();
-        cout << "[CHANGE PIN]\n";
-        cout << "Leave a line empty at any point to go back without changing your PIN.\n\n";
+        cout << "Leave a line empty to go back without changing your PIN.\n\n";
 
         // Check the current PIN first
         string input;
