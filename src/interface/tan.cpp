@@ -4,8 +4,7 @@ int opt, walletOpt, PIN, attempt, activeAccount;
 long long accountNum, accNum, pw;
 double cash, RegisteredWallet, PresetWallet=5000;
 
-optional<int> DisplayMainScreen(Session& session){
-	do {
+void DisplayMainScreen(Session& session){
 	system("cls");
 	cout << "Welcome to ePESO!\n\n";
 	cout << "[1] Log In\n";
@@ -15,25 +14,23 @@ optional<int> DisplayMainScreen(Session& session){
 	cin >> opt;
 	switch(opt){
 		case 1:
-			Login();		
+			Login();
 			break;
 		case 2:
 			RegisteredWallet=0;
-			session.screen = SCREENS::REGISTRATION;
+			session.RequestScreen(SCREENS::REGISTRATION);
 			break;
-		case 3: 
+		case 3:
 			cout << "Exiting program...";
-			return 0;
+			session.RequestExit(0);
+			break;
 		default:
 			cout <<"Invalid option. Press any key to continue...";
 			_getch();
 			break;
 	}
-	
-	} while(opt!= 3);
-	return 0;
 }
-optional<int> Register(Session& session){
+void Register(Session& session){
 	system("cls");
 	cout << "Welcome to ePESO!\n[CREATING ACCOUNT]\n\n";
 	cout << "Enter account number (10 Digits): ";
@@ -96,6 +93,7 @@ optional<int> Register(Session& session){
 					}
 										
 				}while(walletOpt!=3);
+				session.RequestScreen(SCREENS::MAIN);
 				return;
 			}
 			else{
@@ -106,11 +104,12 @@ optional<int> Register(Session& session){
 				cout<<"Access Denied. Exiting Program.";
 			}
 		}while(attempt>0);
-	} 
+	}
 	else if (accNum!=accountNum) {
 		cout<<"Account number not registered. Press any key to continue...";
 		_getch();
 	}
+	session.RequestScreen(SCREENS::MAIN);
 }
 
 

@@ -11,8 +11,8 @@
 
 using namespace std;
 
-optional<int> DisplayMainScreen(Session& session);
+void DisplayMainScreen(Session& session);
 void Login();
-optional<int> Register(Session& session);
+void Register(Session& session);
 void CashIn();
 void CashOut();

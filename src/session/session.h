@@ -2,16 +2,19 @@
 
 #include <optional>
 
+#include <database.h>
 #include <screens.h>
-#include <account.h>
 
 // Pass this around to classes that need it rather than making it a singleton
 class Session {
 public:
-    int account = 0;
-    SCREENS screen = SCREENS::NONE;
+    Session();
+
+    std::unique_ptr<Database> database;
+    int account = 0; // Uses the account id so that it doesn't need to know about the account class
+    SCREENS screen = SCREENS::MAIN;
     std::optional<int> exit_code = std::nullopt;
 
-    void SwitchScreen(SCREENS new_screen); // Can't be NONE
-    void RequestExit(int new_exit_code);
+    void RequestScreen(SCREENS new_screen); // Only a request you still have to return manually
+    void RequestExit(int new_exit_code); // Only a request you still have to return manually
 };

@@ -8,30 +8,17 @@
 #include <session.h>
 #include <tan.h>
 
-// # Screens
-// Login
-// Register
-// ?
-
 namespace Interface {
-    inline const std::unordered_map<SCREENS, std::function<std::optional<int>(Session&)>> SCREEN_TO_FUNCTION = {
+    inline const std::unordered_map<SCREENS, std::function<void(Session&)>> SCREEN_TO_FUNCTION = {
         {SCREENS::MAIN, DisplayMainScreen},
         {SCREENS::REGISTRATION, Register}
     };
 
     // The main function that runs the interface on a loop
-    inline std::optional<int> ShowInterface(Session& session) {
-        std::optional<int> interface_result = std::nullopt;
-        SCREENS last_screen = SCREENS::NONE;
-        while (!(interface_result)) { // Waits until the interface result returns something
-            if (session.screen != last_screen) {
-                last_screen = session.screen;
-                interface_result = SCREEN_TO_FUNCTION.at(session.screen)(session);
-            }
-            else { // Fallback just in case
-                session.screen = SCREENS::MAIN;
-            }
+    // Runs until session.RequestExit() then main reads session.exit_code
+    inline void ShowInterface(Session& session) {
+        while (!session.exit_code) {
+            SCREEN_TO_FUNCTION.at(session.screen)(session);
         }
-        return interface_result; // Passed onto main.cpp so it knows how to exit
     }
 }
