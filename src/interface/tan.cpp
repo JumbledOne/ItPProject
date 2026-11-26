@@ -14,7 +14,7 @@ void DisplayMainScreen(Session& session){
 	cin >> opt;
 	switch(opt){
 		case 1:
-			Login();
+			Login(session);
 			break;
 		case 2:
 			RegisteredWallet=0;
@@ -79,10 +79,10 @@ void Register(Session& session){
 					cin >> walletOpt;
 					switch (walletOpt){
 						case 1:
-							CashIn();
+							CashIn(session);
 							break;
 						case 2:
-							CashOut();
+							CashOut(session);
 							break;
 						case 3:
 							break;
@@ -114,7 +114,7 @@ void Register(Session& session){
 
 
 
-void Login() {
+void Login(Session& session) {
 	system("cls");
 	cout << "Welcome to ePESO!\nLogging In...\n\n";
 	cout << "Enter account number: ";
@@ -138,10 +138,10 @@ void Login() {
 						cin >> walletOpt;
 						switch (walletOpt){
 							case 1:
-								CashIn();
+								CashIn(session);
 								break;
 							case 2:
-								CashOut();
+								CashOut(session);
 								break;
 							case 3:
 								break;
@@ -169,7 +169,7 @@ void Login() {
 }
 
 
-void CashIn(){
+void CashIn(Session& session){
 	system("cls");
 	cout << "Welcome to ePESO!\n[CASH IN]\n";
 	if (activeAccount == 1)
@@ -193,7 +193,7 @@ void CashIn(){
 
 
 
-void CashOut(){
+void CashOut(Session& session){
 	system("cls");
 	cout << "Welcome to ePESO!\n\n[CASH OUT]\n";
 	if (activeAccount == 1)

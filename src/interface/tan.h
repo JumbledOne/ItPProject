@@ -12,7 +12,7 @@
 using namespace std;
 
 void DisplayMainScreen(Session& session);
-void Login();
+void Login(Session& session);
 void Register(Session& session);
-void CashIn();
-void CashOut();
+void CashIn(Session& session);
+void CashOut(Session& session);
