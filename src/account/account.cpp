@@ -15,6 +15,30 @@ float Account::GetMoney() const {
     return money;
 }
 
+bool Account::HasSufficientBalance(float amount) const {
+    return amount > 0 && money >= amount;
+}
+
+// Adds a positive amount to the wallet balance.
+bool Account::AddMoney(float amount) {
+    if (amount <= 0) {
+        return false;
+    }
+
+    money += amount;
+    return true;
+}
+
+// Deducts money only when the balance is sufficient.
+bool Account::DeductMoney(float amount) {
+    if (!HasSufficientBalance(amount)) {
+        return false;
+    }
+
+    money -= amount;
+    return true;
+}
+
 bool Account::SetPhoneNumber(std::string new_number){
     if (new_number.size() != PHONE_NUMBER_LENGTH) {
         return false;
