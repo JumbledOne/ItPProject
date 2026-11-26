@@ -26,4 +26,7 @@ public:
 
     Account& GetAccount(int id);
     Transaction& GetTransaction(int id);
+
+    bool HasAccount(int id);
+    bool HasTransaction(int id);
 };

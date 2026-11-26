@@ -32,3 +32,11 @@ Account& Database::GetAccount(int id) {
 Transaction& Database::GetTransaction(int id) {
     return transactions.at(id);
 }
+
+bool Database::HasAccount(int id) {
+    return accounts.count(id) == 1;
+}
+
+bool Database::HasTransaction(int id) {
+     return transactions.count(id) == 1;
+}
