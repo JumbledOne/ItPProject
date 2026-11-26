@@ -29,4 +29,11 @@ public:
 
     bool HasAccount(int id);
     bool HasTransaction(int id);
+
+    // Read only
+    const std::unordered_map<int, Account>& GetAccounts() const;
+    const std::unordered_map<int, Transaction>& GetTransactions() const;
+
+    int GetLastAccountId() const;
+    int GetLastTransactionId() const;
 };

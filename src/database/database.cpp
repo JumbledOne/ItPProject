@@ -40,3 +40,19 @@ bool Database::HasAccount(int id) {
 bool Database::HasTransaction(int id) {
      return transactions.count(id) == 1;
 }
+
+const std::unordered_map<int, Account>& Database::GetAccounts() const {
+    return accounts;
+}
+
+const std::unordered_map<int, Transaction>& Database::GetTransactions() const {
+    return transactions;
+}
+
+int Database::GetLastAccountId() const {
+    return last_account_id;
+}
+
+int Database::GetLastTransactionId() const {
+    return last_transaction_id;
+}

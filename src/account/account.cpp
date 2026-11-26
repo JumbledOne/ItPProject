@@ -11,6 +11,10 @@ int Account::GetId() const {
     return id;
 }
 
+float Account::GetMoney() const {
+    return money;
+}
+
 bool Account::SetPhoneNumber(std::string new_number){
     if (new_number.size() != PHONE_NUMBER_LENGTH) {
         return false;
@@ -22,6 +26,7 @@ bool Account::SetPhoneNumber(std::string new_number){
 std::string Account::GetPhoneNumber() const {
     return phone_number;
 }
+
 bool Account::SetPin(std::string new_pin) {
     if (new_pin.size() != PIN_LENGTH) {
         return false;

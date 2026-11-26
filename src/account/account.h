@@ -22,6 +22,8 @@ public:
     void SetId(int new_id);
     int GetId() const;
 
+    float GetMoney() const;
+
     bool SetPhoneNumber(std::string new_number); // Return value is whether this succeeded
     std::string GetPhoneNumber() const;
 
